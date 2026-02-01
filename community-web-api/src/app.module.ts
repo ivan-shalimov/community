@@ -13,6 +13,7 @@ import { MembersModule } from './members/members.module';
       database: 'community-dev',
       entities: [],
       synchronize: false,
+      autoLoadEntities: true,
     }),
     MembersModule,
   ],

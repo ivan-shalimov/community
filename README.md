@@ -48,3 +48,17 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## DB migration
+
+All commands should be run within `community-web-api`
+
+```bash
+# generate migration 
+$ npx typeorm migration:generate -d data-source.ts db/<new migration name> -p
+
+# apply pending migrations 
+$ npx typeorm-ts-node-commonjs migration:run -d data-source.ts
+
+# revert the latest migrations 
+$ npx typeorm-ts-node-commonjs migration:revert -d data-source.ts
+```
