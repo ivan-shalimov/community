@@ -28,10 +28,16 @@
         "prettier.enable": true
       },
       "extensions": [
+		"github.copilot",
+		"github.copilot-chat",
         // Recommended extensions for Node.js/TypeScript development
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "ms-vscode.vscode-typescript-next"
+        "ms-vscode.vscode-typescript-next",
+		// Mermaid extension for diagram support 
+		"mermaidchart.vscode-mermaid-chart",
+		// REST Client extension for API testing
+		"humao.rest-client"
       ]
     }
   },

@@ -1,0 +1,22 @@
+@baseUrl = http://localhost:3000/api/members
+
+###
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com"
+}
+
+###
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "token": "some-unique-token",
+  "name": "John Doe"
+}
+
+###
+GET {{baseUrl}}
+Accept: application/json

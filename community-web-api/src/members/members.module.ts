@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MembersService } from './members.service';
+import { MembersService, MembersInviteService } from './services';
 import { MembersController } from './members.controller';
-import { SeedMemberService } from './seed-members.service';
-import { Member } from './entities/member.entity';
+import { SeedMemberService } from './services/seed-members.service';
+import { Member, MemberInvite } from './entities';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Member])],
+  imports: [TypeOrmModule.forFeature([Member, MemberInvite])],
   controllers: [MembersController],
-  providers: [MembersService, SeedMemberService],
+  providers: [MembersService, MembersInviteService, SeedMemberService],
 })
 export class MembersModule {}

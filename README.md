@@ -54,11 +54,23 @@ All commands should be run within `community-web-api`
 
 ```bash
 # generate migration 
-$ npx typeorm migration:generate -d data-source.ts db/<new migration name> -p
+$ npx typeorm migration:generate -d dist/data-source.js db/<new migration name> -p
 
 # apply pending migrations 
-$ npx typeorm-ts-node-commonjs migration:run -d data-source.ts
+$ npx typeorm-ts-node-commonjs migration:run -d dist/data-source.js
 
 # revert the latest migrations 
-$ npx typeorm-ts-node-commonjs migration:revert -d data-source.ts
+$ npx typeorm-ts-node-commonjs migration:revert -d dist/data-source.js
 ```
+
+## Business flows
+
+What to do if member leave community?
+
+* Each instance of Community portal should have own Portal Admin
+* The Portal Admin creates a new community
+* The Portal Admin becomes an Community admin for the community
+* Portal Admin Invite a new Member to the community
+* The member accept invitation and fill contact information
+* The Portal Admin assigns the member as Community admin
+* The community admin invites a new member
