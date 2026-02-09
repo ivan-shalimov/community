@@ -7,13 +7,13 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 
 import { AppModule } from '../src/app.module';
-import { Member, MemberInvite } from '../src/members/entities';
+import { Member, MemberInvite } from '../src/modules/members/entities';
 import {
   UpdateMemberNameDto,
   MemberDto,
   CreateMemberInviteDto,
   RegisterMemberDto,
-} from '../src/members/dto';
+} from '../src/modules/members/dto';
 
 describe('MembersController (e2e)', () => {
   // test data
