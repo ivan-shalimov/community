@@ -19,7 +19,6 @@ This module manages community's members.
 ### Operations
 * Invite member
 * Register member by invite
-* 
 
 ### Questions
 * Should system allows invite member out of community
