@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -23,7 +23,9 @@ export class MembersService {
     });
 
     if (!invite) {
-      throw new NotFoundException('Invite not found for the provided email');
+      throw new ConflictException(
+        `Unexpected error while handling operation. Please verify that the invite token is correct and has not expired.`,
+      );
     }
 
     const entity = this.membersRepository.create(registerMemberDto);
@@ -62,19 +64,23 @@ export class MembersService {
   async updateName(
     id: string,
     updateMemberNameDto: UpdateMemberNameDto,
-  ): Promise<MemberDto> {
-    const entity = await this.membersRepository.findOneBy({ id });
-    if (entity == null) {
-      throw new NotFoundException('entity is not found');
+  ): Promise<void> {
+    const result = await this.membersRepository.update(id, {
+      name: updateMemberNameDto.name,
+    });
+    if (result.affected === 0) {
+      throw new ConflictException(
+        `Unexpected error while updating member with id ${id}`,
+      );
     }
-
-    entity.name = updateMemberNameDto.name;
-
-    await this.membersRepository.save(entity);
-    return MemberDto.fromEntity(entity);
   }
 
   async remove(id: string): Promise<void> {
-    await this.membersRepository.delete(id);
+    const result = await this.membersRepository.delete(id);
+    if (result.affected === 0) {
+      throw new ConflictException(
+        `Unexpected error while deleting member with id ${id}`,
+      );
+    }
   }
 }

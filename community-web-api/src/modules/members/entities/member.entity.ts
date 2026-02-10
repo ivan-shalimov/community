@@ -12,7 +12,7 @@ export class Member {
   // The name of the member.
   name!: string;
 
-  @Column()
+  @Column({ unique: true })
   // The email of the member.
   email!: string;
 }

@@ -13,12 +13,6 @@ export class SeedMemberService implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap() {
-    if (process.env.e2e == 'true') {
-      const name = 'e2e test memeber';
-      const exists = await this.membersService.findOne({ where: { name } });
-      if (!exists) {
-        await this.membersService.save({ name });
-      }
-    }
+    // todo implement checking portal admin user and send invite if not exist
   }
 }

@@ -7,17 +7,14 @@ This module manages community's members.
 
 ## Business Logic & Rules
 
-### Doman dictionary
+### Domain dictionary
 * Member represent community member, why have contact info and system role
 * Member Roles:
   * Admin - portal admin who administrates whole site, he approves creating comunity
 
 ### Rules
-1. **Rule 1:** A new member cannot be invited with an existing email.
-2. **Rule 2:** A new member can be registered only with email from invite
-3. **Rule 3:** An invitation can be used only within 3 days
-4. **Rule 4:** 
-5. **Rule 5:** 
+1. **Rule 1:** Inviting a member by email is idempotent. If an invitation already exists for the given email, the existing invite is reused and its token is refreshed instead of creating a duplicate.
+2. **Rule 2:** A new member can be registered only with an email address that has a valid invitation.
 
 ### Operations
 * Invite member

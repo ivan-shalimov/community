@@ -1,4 +1,4 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { DataSource, Repository } from 'typeorm';
@@ -14,6 +14,7 @@ import {
   CreateMemberInviteDto,
   RegisterMemberDto,
 } from '../src/modules/members/dto';
+import appSetup from '../src/app.setup';
 
 describe('MembersController (e2e)', () => {
   // test data
@@ -24,7 +25,13 @@ describe('MembersController (e2e)', () => {
   };
 
   async function addTestMember() {
-    const entity = membersRepository.create({
+    let entity = await membersRepository.findOne({
+      where: { email: testMember.email },
+    });
+
+    await membersRepository.delete({ email: testMember.email });
+
+    entity = membersRepository.create({
       name: testMember.name,
       email: testMember.email,
     });
@@ -47,14 +54,17 @@ describe('MembersController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    // MUST match your main.ts setup!
-    app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    appSetup(app);
     await app.init();
 
     const dataSource = await app.resolve<DataSource>(DataSource);
     memberInvitesRepository =
       dataSource.getRepository<MemberInvite>(MemberInvite);
     membersRepository = dataSource.getRepository<Member>(Member);
+  });
+
+  afterEach(async () => {
+    await app.close();
   });
 
   it('/api/members (GET)', async () => {
@@ -183,22 +193,25 @@ describe('MembersController (e2e)', () => {
     }
   });
 
-  it('/api/members/:id (PUT)', async () => {
+  it('/api/members/:id/name (PUT)', async () => {
     await addTestMember();
 
     const dto: UpdateMemberNameDto = { name: 'changed' };
     await request(app.getHttpServer())
       .put(`/api/members/${testMember.id}/name`)
       .send(dto)
-      .expect((res) => {
-        if (res.status !== 200) {
-          console.error('Response body:', res.body);
-        } else {
-          expect(res.body).toEqual({ ...testMember, name: dto.name });
-        }
+      .expect(200);
 
-        expect(res.status).toBe(200);
-      });
+    // Add a small delay to ensure transaction commits
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Verify the member was created in the database using the same repository
+    const memberResult = await membersRepository.findOneBy({
+      id: testMember.id,
+    });
+
+    expect(memberResult).not.toBeNull();
+    expect(memberResult?.name).toBe(dto.name);
 
     await deleteTestMember();
   });

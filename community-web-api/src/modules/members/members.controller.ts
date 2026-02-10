@@ -15,6 +15,7 @@ import {
   RegisterMemberDto,
   UpdateMemberNameDto,
 } from './dto';
+import { MemberExistsPipe } from './validation';
 
 @Controller('api/members')
 export class MembersController {
@@ -49,20 +50,20 @@ export class MembersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', MemberExistsPipe) id: string) {
     return this.membersService.findById(id);
   }
 
   @Put(':id/name')
   update(
-    @Param('id') id: string,
+    @Param('id', MemberExistsPipe) id: string,
     @Body() updateMemberDto: UpdateMemberNameDto,
   ) {
     return this.membersService.updateName(id, updateMemberDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', MemberExistsPipe) id: string) {
     return this.membersService.remove(id);
   }
 }
