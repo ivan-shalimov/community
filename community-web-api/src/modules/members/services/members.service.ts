@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -17,22 +17,26 @@ export class MembersService {
   ) {}
 
   async register(registerMemberDto: RegisterMemberDto): Promise<MemberDto> {
+    // todo consider to use cache to reduce the number of queries to database within one request
     const invite = await this.memberInvitesRepository.findOneBy({
       token: registerMemberDto.token,
       email: registerMemberDto.email,
     });
 
-    if (!invite) {
-      throw new ConflictException(
-        `Unexpected error while handling operation. Please verify that the invite token is correct and has not expired.`,
-      );
-    }
+    return this.membersRepository.manager.transaction(
+      async (transactionalEntityManager) => {
+        const membersRepository =
+          transactionalEntityManager.getRepository(Member);
+        const memberInvitesRepository =
+          transactionalEntityManager.getRepository(MemberInvite);
 
-    const entity = this.membersRepository.create(registerMemberDto);
-
-    await this.membersRepository.save(entity);
-    await this.memberInvitesRepository.delete(invite.id);
-    return MemberDto.fromEntity(entity);
+        const entity = membersRepository.create(registerMemberDto);
+        await membersRepository.save(entity);
+        // use `invite!` since the existence of the invite is already checked with validation pipe
+        await memberInvitesRepository.delete(invite!.id);
+        return MemberDto.fromEntity(entity);
+      },
+    );
   }
 
   findAll(): Promise<MemberDto[]> {
@@ -65,22 +69,12 @@ export class MembersService {
     id: string,
     updateMemberNameDto: UpdateMemberNameDto,
   ): Promise<void> {
-    const result = await this.membersRepository.update(id, {
+    await this.membersRepository.update(id, {
       name: updateMemberNameDto.name,
     });
-    if (result.affected === 0) {
-      throw new ConflictException(
-        `Unexpected error while updating member with id ${id}`,
-      );
-    }
   }
 
   async remove(id: string): Promise<void> {
-    const result = await this.membersRepository.delete(id);
-    if (result.affected === 0) {
-      throw new ConflictException(
-        `Unexpected error while deleting member with id ${id}`,
-      );
-    }
+    await this.membersRepository.delete(id);
   }
 }

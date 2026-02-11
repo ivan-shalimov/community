@@ -25,13 +25,10 @@ describe('MembersController (e2e)', () => {
   };
 
   async function addTestMember() {
-    let entity = await membersRepository.findOne({
-      where: { email: testMember.email },
-    });
-
+    // Clean up any existing member first
     await membersRepository.delete({ email: testMember.email });
 
-    entity = membersRepository.create({
+    const entity = membersRepository.create({
       name: testMember.name,
       email: testMember.email,
     });
@@ -47,7 +44,7 @@ describe('MembersController (e2e)', () => {
   let memberInvitesRepository: Repository<MemberInvite>;
   let membersRepository: Repository<Member>;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     // todo use configuration and override for test env
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -63,7 +60,7 @@ describe('MembersController (e2e)', () => {
     membersRepository = dataSource.getRepository<Member>(Member);
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await app.close();
   });
 
@@ -109,14 +106,12 @@ describe('MembersController (e2e)', () => {
       .send(dto)
       .expect((res) => {
         if (res.status !== 201) {
+          // todo remove when logging functionality is added to the app
           console.error('Response body:', res.body);
         }
 
         expect(res.status).toBe(201);
       });
-
-    // Add a small delay to ensure transaction commits
-    await new Promise((resolve) => setTimeout(resolve, 100));
 
     // Verify the invite was created in the database using the same repository
     const result = await memberInvitesRepository.findOneBy({
@@ -164,14 +159,12 @@ describe('MembersController (e2e)', () => {
       .send(dto)
       .expect((res) => {
         if (res.status !== 201) {
+          // todo remove when logging functionality is added to the app
           console.error('Response body:', res.body);
         }
 
         expect(res.status).toBe(201);
       });
-
-    // Add a small delay to ensure transaction commits
-    await new Promise((resolve) => setTimeout(resolve, 100));
 
     // Verify the member was created in the database using the same repository
     const memberResult = await membersRepository.findOneBy({
@@ -202,10 +195,7 @@ describe('MembersController (e2e)', () => {
       .send(dto)
       .expect(200);
 
-    // Add a small delay to ensure transaction commits
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    // Verify the member was created in the database using the same repository
+    // Verify the member was updated in the database using the same repository
     const memberResult = await membersRepository.findOneBy({
       id: testMember.id,
     });
@@ -225,7 +215,5 @@ describe('MembersController (e2e)', () => {
 
     const result = await membersRepository.findOneBy({ id: testMember.id });
     expect(result).toBeNull();
-
-    await deleteTestMember();
   });
 });

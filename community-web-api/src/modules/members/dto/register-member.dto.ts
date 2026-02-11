@@ -1,9 +1,7 @@
-import { IsEmail, IsNotEmpty, Validate } from 'class-validator';
-import { InviteExistsRule } from '../validation';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class RegisterMemberDto {
   @IsNotEmpty()
-  @Validate(InviteExistsRule)
   token!: string;
 
   @IsNotEmpty()

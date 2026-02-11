@@ -15,7 +15,9 @@ export default async (
     password: configService.getOrThrow<string>('POSTGRES_PASSWORD'),
     database: configService.getOrThrow<string>('POSTGRES_DATABASE'),
     entities: [],
-    synchronize: configService.getOrThrow<boolean>('SCHEMA_SYNCHRONIZE'),
+    // todo consider to use schema validation to to convert string to boolean, for example joy
+    synchronize:
+      configService.getOrThrow<string>('SCHEMA_SYNCHRONIZE') === 'true',
     autoLoadEntities: true,
   };
 };

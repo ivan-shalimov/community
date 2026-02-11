@@ -17,6 +17,6 @@ export class MemberExistsPipe implements PipeTransform {
     if (!member) {
       throw new NotFoundException(`Member with ID ${id} not found`);
     }
-    return id; // Or return 'member' if you want the controller to receive the full object
+    return id;
   }
 }

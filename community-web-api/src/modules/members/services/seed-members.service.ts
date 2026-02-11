@@ -9,7 +9,7 @@ import { Member } from '../entities';
 export class SeedMemberService implements OnApplicationBootstrap {
   constructor(
     @InjectRepository(Member)
-    private readonly membersService: Repository<Member>,
+    private readonly membersRepository: Repository<Member>,
   ) {}
 
   async onApplicationBootstrap() {

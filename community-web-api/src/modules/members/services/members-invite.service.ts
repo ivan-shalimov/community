@@ -26,21 +26,16 @@ export class MembersInviteService {
       // 2. Generate a new token and update the existing invite
       // Here, we'll go with option 2 for better security.
 
-      existingInvite.token = randomBytes(16).toString('hex');
+      existingInvite.token = randomBytes(64).toString('base64');
       await this.memberInvitesRepository.save(existingInvite);
       return;
     }
 
     const entity = this.memberInvitesRepository.create(createMemberInviteDto);
 
-    entity.token = randomBytes(16).toString('hex');
+    entity.token = randomBytes(64).toString('base64');
 
-    try {
-      await this.memberInvitesRepository.save(entity);
-    } catch (error) {
-      console.error('Error saving entity:', error);
-      throw error;
-    }
+    await this.memberInvitesRepository.save(entity);
   }
 
   findByToken(token: string): Promise<MemberInviteDto | null> {

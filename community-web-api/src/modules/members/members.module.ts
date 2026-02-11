@@ -4,7 +4,7 @@ import { MembersService, MembersInviteService } from './services';
 import { MembersController } from './members.controller';
 import { SeedMemberService } from './services/seed-members.service';
 import { Member, MemberInvite } from './entities';
-import { MemberExistsPipe, InviteExistsRule } from './validation';
+import { MemberExistsPipe, InviteValidationPipe } from './validation';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Member, MemberInvite])],
@@ -14,7 +14,7 @@ import { MemberExistsPipe, InviteExistsRule } from './validation';
     MembersInviteService,
     SeedMemberService,
     MemberExistsPipe,
-    InviteExistsRule,
+    InviteValidationPipe,
   ],
 })
 export class MembersModule {}

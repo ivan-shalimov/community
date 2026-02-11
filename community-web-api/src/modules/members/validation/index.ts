@@ -1,2 +1,2 @@
 export * from './member-exists.pipe';
-export * from './invite-exists.rule';
+export * from './invite-validation.pipe';

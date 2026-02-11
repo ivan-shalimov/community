@@ -15,7 +15,7 @@ import {
   RegisterMemberDto,
   UpdateMemberNameDto,
 } from './dto';
-import { MemberExistsPipe } from './validation';
+import { InviteValidationPipe, MemberExistsPipe } from './validation';
 
 @Controller('api/members')
 export class MembersController {
@@ -30,6 +30,7 @@ export class MembersController {
   }
 
   @Get('invite/verify/:token')
+  // todo investigate how better to validate query params and path params together, maybe custom pipe that validates both at the same time
   async verify(@Param('token') token: string, @Query('email') email: string) {
     const result = await this.membersInviteService.verify(token, email);
     if (result) {
@@ -40,7 +41,7 @@ export class MembersController {
   }
 
   @Post('register')
-  register(@Body() registerMemberDto: RegisterMemberDto) {
+  register(@Body(InviteValidationPipe) registerMemberDto: RegisterMemberDto) {
     return this.membersService.register(registerMemberDto);
   }
 
