@@ -1,9 +1,4 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { useContainer } from 'class-validator';
-import { AppModule } from './app.module';
+import { INestApplication } from '@nestjs/common';
 
-export default function setupApp(app: INestApplication) {
-  useContainer(app.select(AppModule), { fallbackOnErrors: true });
-
-  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
-}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function setupApp(app: INestApplication) {}

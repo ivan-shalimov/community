@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { MembersModule } from './modules/members/members.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_PIPE, APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { ZodValidationPipe, ZodSerializerInterceptor } from 'nestjs-zod';
 
 import typeOrmOptionsFactory from './config/type-orm-options.factory';
+import { HttpExceptionFilter } from './common/http-exception.filter';
+import { MembersModule } from './modules/members/members.module';
 
 @Module({
   imports: [
@@ -20,6 +24,19 @@ import typeOrmOptionsFactory from './config/type-orm-options.factory';
     MembersModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_PIPE,
+      useClass: ZodValidationPipe,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ZodSerializerInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}

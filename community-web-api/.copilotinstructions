@@ -8,7 +8,7 @@ This is a NestJS-based REST API for a community management service built with Ty
 ### Technology Stack
 - **Framework**: NestJS with Express
 - **Database**: PostgreSQL with TypeORM
-- **Validation**: class-validator, class-transformer
+- **Validation**: zod, nestjs-zod
 - **Testing**: Jest (unit & E2E)
 - **Configuration**: @nestjs/config with environment-based config
 - **Email**: @nestjs-modules/mailer with Handlebars templates
@@ -52,26 +52,28 @@ export class Member {
 #### DTO Patterns
 - Create separate DTOs for different operations (Create, Update, Register, etc.)
 - Use static factory methods: `static fromEntity = (entity: Entity): Dto => ...`
-- Implement validation using class-validator decorators
-- Export all DTOs from `dto/index.ts`
+- Implement validation with Zod schemas and `createZodDto`
+- Export all DTOs and schemas from `dto/index.ts`
+- For query params, use `z.coerce.number()` when numbers are expected
 
 #### Service Layer
 - Inject repositories using `@InjectRepository(Entity)`
 - Use TypeORM Repository pattern
 - Implement business logic in services, not controllers
 - Return DTOs from service methods, not entities directly
-- **Data Validation**: All data passed to service methods must be pre-validated (via controller validation pipes or other validation mechanisms). Services should assume incoming data is already clean and valid.
+- Services are responsible for business rule validation (distinct from input/schema validation)
+
 
 #### Controller Patterns
 - Use `@Controller('api/{resource}')` for all endpoints
 - Inject required services via constructor
 - Use appropriate HTTP decorators (@Get, @Post, @Put, @Delete)
-- Use validation pipes for input validation
+- Use `ZodValidationPipe` for `@Body()`, `@Query()`, and `@Param()` inputs
+- If a route uses both params and query, validate both explicitly to avoid drift
 - Handle errors with NestJS exceptions (NotFoundException, ForbiddenException, etc.)
 
 #### Custom Validation
 - Create validation pipes for entity existence checks
-- Use class-validator rules for complex validation
 - Place validation logic in `validation/` directory
 
 ### Database & Configuration

@@ -7,64 +7,80 @@ import {
   Delete,
   Put,
   Query,
-  ForbiddenException,
 } from '@nestjs/common';
-import { MembersService, MembersInviteService } from './services';
+
 import {
   CreateMemberInviteDto,
+  ListOptionsDto,
+  MemberDto,
   RegisterMemberDto,
+  ResultDto,
   UpdateMemberNameDto,
+  ValidateMemberInviteDto,
 } from './dto';
-import { InviteValidationPipe, MemberExistsPipe } from './validation';
+import { MembersService } from './services';
 
 @Controller('api/members')
 export class MembersController {
-  constructor(
-    private readonly membersService: MembersService,
-    private readonly membersInviteService: MembersInviteService,
-  ) {}
+  constructor(private readonly membersService: MembersService) {}
 
   @Post('invite')
-  invite(@Body() inviteMemberDto: CreateMemberInviteDto) {
-    return this.membersInviteService.create(inviteMemberDto);
+  invite(@Body() inviteMemberDto: CreateMemberInviteDto): Promise<void> {
+    return this.membersService.createInvite(inviteMemberDto);
   }
 
   @Get('invite/verify/:token')
-  // todo investigate how better to validate query params and path params together, maybe custom pipe that validates both at the same time
-  async verify(@Param('token') token: string, @Query('email') email: string) {
-    const result = await this.membersInviteService.verify(token, email);
-    if (result) {
-      return { valid: true };
-    } else {
-      throw new ForbiddenException('Invalid Token');
-    }
+  async verify(
+    @Query() validateMemberInviteDto: ValidateMemberInviteDto,
+  ): Promise<ResultDto> {
+    await this.membersService.findInviteByTokenAndEmailOrThrowError(
+      validateMemberInviteDto.token,
+      validateMemberInviteDto.email,
+    );
+
+    return new ResultDto(true);
   }
 
   @Post('register')
-  register(@Body(InviteValidationPipe) registerMemberDto: RegisterMemberDto) {
-    return this.membersService.register(registerMemberDto);
+  async register(
+    @Body() registerMemberDto: RegisterMemberDto,
+  ): Promise<MemberDto> {
+    const invite =
+      await this.membersService.findInviteByTokenAndEmailOrThrowError(
+        registerMemberDto.token,
+        registerMemberDto.email,
+      );
+
+    return this.membersService.register(invite, registerMemberDto);
   }
 
   @Get()
-  findAll() {
-    return this.membersService.findAll();
+  find(@Query() listOptionsDto: ListOptionsDto): Promise<MemberDto[]> {
+    return this.membersService
+      .find(listOptionsDto)
+      .then((entities) =>
+        entities.map((entity) => MemberDto.fromEntity(entity)),
+      );
   }
 
   @Get(':id')
-  findOne(@Param('id', MemberExistsPipe) id: string) {
-    return this.membersService.findById(id);
+  async findOne(@Param('id') id: string): Promise<MemberDto> {
+    const member = await this.membersService.findByIdOrThrowError(id);
+    return MemberDto.fromEntity(member);
   }
 
   @Put(':id/name')
-  update(
-    @Param('id', MemberExistsPipe) id: string,
+  async update(
+    @Param('id') id: string,
     @Body() updateMemberDto: UpdateMemberNameDto,
-  ) {
-    return this.membersService.updateName(id, updateMemberDto);
+  ): Promise<void> {
+    await this.membersService.findByIdOrThrowError(id);
+    await this.membersService.updateName(id, updateMemberDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', MemberExistsPipe) id: string) {
-    return this.membersService.remove(id);
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.membersService.findByIdOrThrowError(id);
+    await this.membersService.remove(id);
   }
 }
