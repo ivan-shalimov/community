@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ZodValidationPipe, ZodSerializerInterceptor } from 'nestjs-zod';
 
+import configuration from './config/configuration';
 import typeOrmOptionsFactory from './config/type-orm-options.factory';
 import { HttpExceptionFilter } from './common/http-exception.filter';
 import { MembersModule } from './modules/members/members.module';
@@ -15,6 +16,7 @@ import { MembersModule } from './modules/members/members.module';
       isGlobal: true,
       cache: true,
       envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
+      load: [configuration],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
