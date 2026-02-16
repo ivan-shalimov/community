@@ -14,7 +14,6 @@ import {
   CreateMemberInviteDto,
   RegisterMemberDto,
 } from '../src/modules/members/dto';
-import appSetup from '../src/app.setup';
 
 describe('MembersController (e2e)', () => {
   // test data
@@ -50,7 +49,6 @@ describe('MembersController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    appSetup(app);
     await app.init();
 
     const dataSource = await app.resolve<DataSource>(DataSource);

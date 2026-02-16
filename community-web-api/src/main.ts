@@ -1,11 +1,15 @@
 import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
-import appSetup from './app.setup';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  appSetup(app);
-  await app.listen(process.env.PORT ?? 3000);
+
+  const configService = await app.resolve<ConfigService>(ConfigService);
+  const port = configService.getOrThrow<number>('port');
+
+  await app.listen(port);
+  console.log(`Application is running on: http://localhost:${port}`);
 }
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 bootstrap();

@@ -8,5 +8,6 @@ export interface DatabaseConfig {
 }
 
 export interface AppConfig {
+  port: number;
   database: DatabaseConfig;
 }

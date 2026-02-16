@@ -17,5 +17,6 @@ export default (): AppConfig => {
       database: result.data.POSTGRES_DATABASE,
       schemaSynchronize: result.data.SCHEMA_SYNCHRONIZE,
     },
+    port: result.data.PORT,
   };
 };
