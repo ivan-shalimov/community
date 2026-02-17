@@ -42,6 +42,7 @@
 	"remoteUser": "node",
 	"runArgs": [
 		"--network=develop-network",
-		"--env-file=${localWorkspaceFolder}/../.env.secrets"
+		"--env-file=${localWorkspaceFolder}/../.env.secrets",
+		"--cpus=4"
 	]
 }

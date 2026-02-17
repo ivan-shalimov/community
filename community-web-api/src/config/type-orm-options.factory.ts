@@ -3,7 +3,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 import { DatabaseConfig } from './interfaces';
 
-export default async (
+export const typeOrmOptionsFactory = async (
   configService: ConfigService,
 ): Promise<TypeOrmModuleOptions> => {
   // Ensure that environment variables are loaded before accessing them

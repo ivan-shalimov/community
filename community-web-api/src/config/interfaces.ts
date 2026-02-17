@@ -7,7 +7,15 @@ export interface DatabaseConfig {
   schemaSynchronize: boolean;
 }
 
+export interface MailerConfig {
+  host: string;
+  port: number;
+  adminName: string;
+  adminEmail: string;
+}
+
 export interface AppConfig {
   port: number;
   database: DatabaseConfig;
+  mailer: MailerConfig;
 }
