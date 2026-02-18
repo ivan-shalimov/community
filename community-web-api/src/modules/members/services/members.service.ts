@@ -14,10 +14,12 @@ import {
   ListOptionsDto,
 } from '../dto';
 import { MemberInvite } from '../entities';
+import { EmailService } from '../../../common/email.service';
 
 @Injectable()
 export class MembersService {
   constructor(
+    private readonly emailService: EmailService,
     @InjectRepository(Member)
     private membersRepository: Repository<Member>,
     @InjectRepository(MemberInvite)
@@ -60,6 +62,12 @@ export class MembersService {
     });
   }
 
+  hasMemberWith(email: string): Promise<boolean> {
+    return this.membersRepository
+      .findOneBy({ email })
+      .then((entity) => entity != null);
+  }
+
   async updateName(
     id: string,
     updateMemberNameDto: UpdateMemberNameDto,
@@ -76,26 +84,23 @@ export class MembersService {
   async createInvite(
     createMemberInviteDto: CreateMemberInviteDto,
   ): Promise<void> {
-    const existingInvite = await this.memberInvitesRepository.findOneBy({
+    let invite = await this.memberInvitesRepository.findOneBy({
       email: createMemberInviteDto.email,
     });
 
-    if (existingInvite) {
-      // If an invite already exists for the email, we can choose to either:
-      // 1. Return the existing invite (not recommended for security reasons)
-      // 2. Generate a new token and update the existing invite
-      // Here, we'll go with option 2 for better security.
-
-      existingInvite.token = randomBytes(64).toString('base64');
-      await this.memberInvitesRepository.save(existingInvite);
-      return;
+    if (invite == null) {
+      invite = this.memberInvitesRepository.create(createMemberInviteDto);
     }
 
-    const entity = this.memberInvitesRepository.create(createMemberInviteDto);
+    invite.token = randomBytes(64).toString('base64');
 
-    entity.token = randomBytes(64).toString('base64');
+    await this.memberInvitesRepository.save(invite);
 
-    await this.memberInvitesRepository.save(entity);
+    await this.emailService.sendMemberInviteEmail(
+      createMemberInviteDto.name,
+      createMemberInviteDto.email,
+      invite.token,
+    );
   }
 
   async findInviteByTokenAndEmailOrThrowError(

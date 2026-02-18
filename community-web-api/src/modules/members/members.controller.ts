@@ -29,7 +29,7 @@ export class MembersController {
     return this.membersService.createInvite(inviteMemberDto);
   }
 
-  @Get('invite/verify/:token')
+  @Get('invite/verify')
   async verify(
     @Query() validateMemberInviteDto: ValidateMemberInviteDto,
   ): Promise<ResultDto> {

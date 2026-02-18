@@ -4,10 +4,11 @@ import { MembersService } from './services';
 import { MembersController } from './members.controller';
 import { SeedMemberService } from './services/seed-members.service';
 import { Member, MemberInvite } from './entities';
+import { EmailService } from '../../common/email.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Member, MemberInvite])],
   controllers: [MembersController],
-  providers: [MembersService, SeedMemberService],
+  providers: [MembersService, SeedMemberService, EmailService],
 })
 export class MembersModule {}

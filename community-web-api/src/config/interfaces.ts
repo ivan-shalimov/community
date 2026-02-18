@@ -1,4 +1,4 @@
-export interface DatabaseConfig {
+export interface IDatabaseConfig {
   host: string;
   port: number;
   user: string;
@@ -7,15 +7,20 @@ export interface DatabaseConfig {
   schemaSynchronize: boolean;
 }
 
-export interface MailerConfig {
+export interface IMailerConfig {
   host: string;
+  port: number;
+}
+
+export interface ICommonConfig {
   port: number;
   adminName: string;
   adminEmail: string;
+  portalUrl: string;
 }
 
 export interface AppConfig {
-  port: number;
-  database: DatabaseConfig;
-  mailer: MailerConfig;
+  common: ICommonConfig;
+  database: IDatabaseConfig;
+  mailer: IMailerConfig;
 }

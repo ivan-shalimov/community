@@ -9,7 +9,12 @@ export const configuration = (): AppConfig => {
   }
 
   return {
-    port: result.data.PORT,
+    common: {
+      adminName: result.data.ADMIN_NAME,
+      adminEmail: result.data.ADMIN_EMAIL,
+      portalUrl: result.data.PORTAL_URL,
+      port: result.data.PORT,
+    },
     database: {
       host: result.data.POSTGRES_HOST,
       port: result.data.POSTGRES_PORT,
@@ -21,8 +26,6 @@ export const configuration = (): AppConfig => {
     mailer: {
       host: result.data.MAILER_HOST,
       port: result.data.MAILER_PORT,
-      adminName: result.data.MAILER_ADMIN_NAME,
-      adminEmail: result.data.MAILER_ADMIN_EMAIL,
     },
   };
 };

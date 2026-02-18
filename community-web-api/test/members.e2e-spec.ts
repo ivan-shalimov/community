@@ -1,5 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MailerService } from '@nestjs-modules/mailer';
 
 import { DataSource, Repository } from 'typeorm';
 
@@ -42,11 +43,17 @@ describe('MembersController (e2e)', () => {
   let app: INestApplication<App>;
   let memberInvitesRepository: Repository<MemberInvite>;
   let membersRepository: Repository<Member>;
+  const mockMailerService: Partial<MailerService> = {
+    sendMail: jest.fn().mockResolvedValue({ messageId: 'mock-id' }),
+  };
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(MailerService)
+      .useValue(mockMailerService)
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
@@ -59,6 +66,10 @@ describe('MembersController (e2e)', () => {
 
   afterAll(async () => {
     await app.close();
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
   it('/api/members (GET)', async () => {
@@ -119,13 +130,27 @@ describe('MembersController (e2e)', () => {
     expect(result?.token).not.toBeNull();
     expect(result?.name).toBe(dto.name);
 
+    expect(mockMailerService.sendMail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: `"${dto.name}" <${dto.email}>`,
+        subject: 'You are invited to join Community',
+        template: 'invite',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        context: expect.objectContaining({
+          name: dto.name,
+          token: encodeURIComponent(result!.token),
+          email: encodeURIComponent(dto.email),
+        }),
+      }),
+    );
+
     // Clean up the invite after test
     if (result) {
       await memberInvitesRepository.delete(result.id);
     }
   });
 
-  it('/api/members/invite/verify/:token?email=<email> (GET)', async () => {
+  it('/api/members/invite/verify?token=<token>&email=<email> (GET)', async () => {
     await memberInvitesRepository.deleteAll();
     const entity = memberInvitesRepository.create({
       name: 'verify test',
@@ -135,12 +160,16 @@ describe('MembersController (e2e)', () => {
     await memberInvitesRepository.save(entity);
 
     await request(app.getHttpServer())
-      .get(`/api/members/invite/verify/${entity.token}?email=${entity.email}`)
+      .get(
+        `/api/members/invite/verify?token=${encodeURIComponent(entity.token)}&email=${encodeURIComponent(entity.email)}`,
+      )
       .expect((res) => {
         if (res.status !== 200) {
           // todo remove when logging functionality is added to the app
           console.error('Response body:', res.body);
         }
+
+        expect(res.status).toBe(200);
       });
 
     await memberInvitesRepository.deleteAll();

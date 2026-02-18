@@ -1,7 +1,7 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-import { DatabaseConfig } from './interfaces';
+import { IDatabaseConfig } from './interfaces';
 
 export const typeOrmOptionsFactory = async (
   configService: ConfigService,
@@ -9,7 +9,7 @@ export const typeOrmOptionsFactory = async (
   // Ensure that environment variables are loaded before accessing them
   await ConfigModule.envVariablesLoaded;
 
-  const config = configService.getOrThrow<DatabaseConfig>('database');
+  const config = configService.getOrThrow<IDatabaseConfig>('database');
 
   return {
     type: 'postgres',

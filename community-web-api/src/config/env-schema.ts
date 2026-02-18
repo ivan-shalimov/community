@@ -2,6 +2,9 @@ import { z } from 'zod';
 
 export const EnvSchema = z.object({
   PORT: z.coerce.number().int().min(1).max(65535).default(3000),
+  ADMIN_NAME: z.string().nonempty(),
+  ADMIN_EMAIL: z.email(),
+  PORTAL_URL: z.url(),
   // database configuration
   POSTGRES_HOST: z.string().nonempty(),
   POSTGRES_PORT: z.coerce.number().min(1).max(65535),
@@ -12,6 +15,4 @@ export const EnvSchema = z.object({
   // mailer configuration
   MAILER_HOST: z.string().nonempty(),
   MAILER_PORT: z.coerce.number().min(1).max(65535),
-  MAILER_ADMIN_NAME: z.string().nonempty(),
-  MAILER_ADMIN_EMAIL: z.email(),
 });
