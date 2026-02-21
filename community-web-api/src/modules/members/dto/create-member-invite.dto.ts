@@ -6,6 +6,4 @@ export const CreateMemberInviteSchema = z.object({
   email: z.email(),
 });
 
-export class CreateMemberInviteDto extends createZodDto(
-  CreateMemberInviteSchema,
-) {}
+export class CreateMemberInviteDto extends createZodDto(CreateMemberInviteSchema) {}

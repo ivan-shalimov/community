@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+
+import { MailerService } from '@nestjs-modules/mailer';
 
 import { ICommonConfig } from '../../../../config/interfaces';
 
@@ -11,11 +12,7 @@ export class EmailService {
     private readonly configService: ConfigService,
   ) {}
 
-  async sendMemberInviteEmail(
-    name: string,
-    email: string,
-    token: string,
-  ): Promise<void> {
+  async sendMemberInviteEmail(name: string, email: string, token: string): Promise<void> {
     const config = this.configService.getOrThrow<ICommonConfig>('common');
 
     await this.mailerService.sendMail({

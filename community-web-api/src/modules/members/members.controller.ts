@@ -1,13 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  Put,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+
+import { MembersService } from './services/members.service';
 
 import { CreateMemberInviteDto } from './dto/create-member-invite.dto';
 import { ListOptionsDto } from './dto/list-options.dto';
@@ -16,7 +9,6 @@ import { RegisterMemberDto } from './dto/register-member.dto';
 import { ResultResponseDto } from './dto/result-response.dto';
 import { UpdateMemberNameDto } from './dto/update-member-name.dto';
 import { ValidateMemberInviteDto } from './dto/validate-member-invite.dto';
-import { MembersService } from './services/members.service';
 
 @Controller('api/members')
 export class MembersController {
@@ -40,22 +32,17 @@ export class MembersController {
   }
 
   @Post('register')
-  async register(
-    @Body() registerMemberDto: RegisterMemberDto,
-  ): Promise<MemberResponseDto> {
-    const invite =
-      await this.membersService.findInviteByTokenAndEmailOrThrowError(
-        registerMemberDto.token,
-        registerMemberDto.email,
-      );
+  async register(@Body() registerMemberDto: RegisterMemberDto): Promise<MemberResponseDto> {
+    const invite = await this.membersService.findInviteByTokenAndEmailOrThrowError(
+      registerMemberDto.token,
+      registerMemberDto.email,
+    );
 
     return this.membersService.register(invite, registerMemberDto);
   }
 
   @Get()
-  async find(
-    @Query() listOptionsDto: ListOptionsDto,
-  ): Promise<MemberResponseDto[]> {
+  async find(@Query() listOptionsDto: ListOptionsDto): Promise<MemberResponseDto[]> {
     const entities = await this.membersService.find(listOptionsDto);
     return entities.map((entity) => MemberResponseDto.fromEntity(entity));
   }

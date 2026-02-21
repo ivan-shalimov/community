@@ -1,8 +1,9 @@
 import { ArgumentsHost, Catch, HttpException } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
-import * as z from 'zod';
-import { ZodSerializationException, ZodValidationException } from 'nestjs-zod';
+
 import { Response } from 'express';
+import { ZodSerializationException, ZodValidationException } from 'nestjs-zod';
+import * as z from 'zod';
 
 @Catch(HttpException)
 export class HttpExceptionFilter extends BaseExceptionFilter {

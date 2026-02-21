@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_PIPE, APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
-
-import { ZodValidationPipe, ZodSerializerInterceptor } from 'nestjs-zod';
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { typeOrmOptionsFactory } from './config/type-orm-options.factory';
-import { configuration } from './config/configuration';
+import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
+
 import { HttpExceptionFilter } from './common/http-exception.filter';
-import { MembersModule } from './modules/members/members.module';
 import { EmailModule } from './common/modules/emails/email/email.module';
+import { configuration } from './config/configuration';
+import { typeOrmOptionsFactory } from './config/type-orm-options.factory';
+import { MembersModule } from './modules/members/members.module';
 
 @Module({
   imports: [

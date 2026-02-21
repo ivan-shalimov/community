@@ -1,10 +1,10 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
+
+import { MailerOptions } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import * as path from 'path';
 
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-
 import { ICommonConfig, IMailerConfig } from './interfaces';
-import { MailerOptions } from '@nestjs-modules/mailer';
 
 export const mailerOptionsFactory = async (
   configService: ConfigService,

@@ -1,19 +1,19 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-
 import { InjectRepository } from '@nestjs/typeorm';
+
 import { Repository } from 'typeorm';
 
-import { EmailService } from '../../../common/modules/emails/email/email.service';
 import { CryptoHelper } from '../../../common/crypto.helper';
+import { EmailService } from '../../../common/modules/emails/email/email.service';
 
-import { Member } from '../entities/member.entity';
-import { MemberInvite } from '../entities/member-invite.entity';
-
-import { RegisterMemberDto } from '../dto/register-member.dto';
-import { UpdateMemberNameDto } from '../dto/update-member-name.dto';
-import { MemberResponseDto } from '../dto/member-response.dto';
 import { CreateMemberInviteDto } from '../dto/create-member-invite.dto';
 import { ListOptionsDto } from '../dto/list-options.dto';
+import { MemberResponseDto } from '../dto/member-response.dto';
+import { RegisterMemberDto } from '../dto/register-member.dto';
+import { UpdateMemberNameDto } from '../dto/update-member-name.dto';
+
+import { MemberInvite } from '../entities/member-invite.entity';
+import { Member } from '../entities/member.entity';
 
 @Injectable()
 export class MembersService {
@@ -29,19 +29,15 @@ export class MembersService {
     invite: MemberInvite,
     registerMemberDto: RegisterMemberDto,
   ): Promise<MemberResponseDto> {
-    return this.membersRepository.manager.transaction(
-      async (transactionalEntityManager) => {
-        const membersRepository =
-          transactionalEntityManager.getRepository(Member);
-        const memberInvitesRepository =
-          transactionalEntityManager.getRepository(MemberInvite);
+    return this.membersRepository.manager.transaction(async (transactionalEntityManager) => {
+      const membersRepository = transactionalEntityManager.getRepository(Member);
+      const memberInvitesRepository = transactionalEntityManager.getRepository(MemberInvite);
 
-        const entity = membersRepository.create(registerMemberDto);
-        await membersRepository.save(entity);
-        await memberInvitesRepository.delete(invite.id);
-        return MemberResponseDto.fromEntity(entity);
-      },
-    );
+      const entity = membersRepository.create(registerMemberDto);
+      await membersRepository.save(entity);
+      await memberInvitesRepository.delete(invite.id);
+      return MemberResponseDto.fromEntity(entity);
+    });
   }
 
   find(options: ListOptionsDto): Promise<Member[]> {
@@ -62,15 +58,10 @@ export class MembersService {
   }
 
   hasMemberWith(email: string): Promise<boolean> {
-    return this.membersRepository
-      .findOneBy({ email })
-      .then((entity) => entity != null);
+    return this.membersRepository.findOneBy({ email }).then((entity) => entity != null);
   }
 
-  async updateName(
-    id: string,
-    updateMemberNameDto: UpdateMemberNameDto,
-  ): Promise<void> {
+  async updateName(id: string, updateMemberNameDto: UpdateMemberNameDto): Promise<void> {
     await this.membersRepository.update(id, {
       name: updateMemberNameDto.name,
     });
@@ -80,9 +71,7 @@ export class MembersService {
     await this.membersRepository.delete(id);
   }
 
-  async createInvite(
-    createMemberInviteDto: CreateMemberInviteDto,
-  ): Promise<void> {
+  async createInvite(createMemberInviteDto: CreateMemberInviteDto): Promise<void> {
     let invite = await this.memberInvitesRepository.findOneBy({
       email: createMemberInviteDto.email,
     });
@@ -102,10 +91,7 @@ export class MembersService {
     );
   }
 
-  async findInviteByTokenAndEmailOrThrowError(
-    token: string,
-    email: string,
-  ): Promise<MemberInvite> {
+  async findInviteByTokenAndEmailOrThrowError(token: string, email: string): Promise<MemberInvite> {
     const invite = await this.memberInvitesRepository.findOneBy({
       token,
       email,

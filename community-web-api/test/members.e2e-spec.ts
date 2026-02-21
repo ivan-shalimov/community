@@ -1,19 +1,18 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { MailerService } from '@nestjs-modules/mailer';
-
-import { DataSource, Repository } from 'typeorm';
-
 import request from 'supertest';
 import { App } from 'supertest/types';
+import { DataSource, Repository } from 'typeorm';
 
 import { AppModule } from '../src/app.module';
-import { Member } from '../src/modules/members/entities/member.entity';
-import { MemberInvite } from '../src/modules/members/entities/member-invite.entity';
-import { UpdateMemberNameDto } from '../src/modules/members/dto/update-member-name.dto';
-import { MemberResponseDto } from '../src/modules/members/dto/member-response.dto';
 import { CreateMemberInviteDto } from '../src/modules/members/dto/create-member-invite.dto';
+import { MemberResponseDto } from '../src/modules/members/dto/member-response.dto';
 import { RegisterMemberDto } from '../src/modules/members/dto/register-member.dto';
+import { UpdateMemberNameDto } from '../src/modules/members/dto/update-member-name.dto';
+import { MemberInvite } from '../src/modules/members/entities/member-invite.entity';
+import { Member } from '../src/modules/members/entities/member.entity';
 
 describe('MembersController (e2e)', () => {
   // test data
@@ -58,8 +57,7 @@ describe('MembersController (e2e)', () => {
     await app.init();
 
     const dataSource = await app.resolve<DataSource>(DataSource);
-    memberInvitesRepository =
-      dataSource.getRepository<MemberInvite>(MemberInvite);
+    memberInvitesRepository = dataSource.getRepository<MemberInvite>(MemberInvite);
     membersRepository = dataSource.getRepository<Member>(Member);
   });
 
@@ -246,9 +244,7 @@ describe('MembersController (e2e)', () => {
   it('/api/members/:id (DELETE)', async () => {
     await addTestMember();
 
-    await request(app.getHttpServer())
-      .delete(`/api/members/${testMember.id}`)
-      .expect(200);
+    await request(app.getHttpServer()).delete(`/api/members/${testMember.id}`).expect(200);
 
     const result = await membersRepository.findOneBy({ id: testMember.id });
     expect(result).toBeNull();

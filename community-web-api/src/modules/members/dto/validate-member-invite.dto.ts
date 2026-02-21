@@ -6,6 +6,4 @@ export const ValidateMemberInviteSchema = z.object({
   email: z.email(),
 });
 
-export class ValidateMemberInviteDto extends createZodDto(
-  ValidateMemberInviteSchema,
-) {}
+export class ValidateMemberInviteDto extends createZodDto(ValidateMemberInviteSchema) {}
