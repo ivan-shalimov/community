@@ -5,7 +5,8 @@ import { APP_PIPE, APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
 import { ZodValidationPipe, ZodSerializerInterceptor } from 'nestjs-zod';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { typeOrmOptionsFactory, configuration } from './config';
+import { typeOrmOptionsFactory } from './config/type-orm-options.factory';
+import { configuration } from './config/configuration';
 import { HttpExceptionFilter } from './common/http-exception.filter';
 import { MembersModule } from './modules/members/members.module';
 import { EmailModule } from './common/modules/emails/email/email.module';

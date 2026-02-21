@@ -1,20 +1,19 @@
-import { randomBytes } from 'crypto';
-
 import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Member } from '../entities/member.entity';
-import {
-  RegisterMemberDto,
-  UpdateMemberNameDto,
-  MemberResponseDto,
-  CreateMemberInviteDto,
-  ListOptionsDto,
-} from '../dto';
-import { MemberInvite } from '../entities';
 import { EmailService } from '../../../common/modules/emails/email/email.service';
+import { CryptoHelper } from '../../../common/crypto.helper';
+
+import { Member } from '../entities/member.entity';
+import { MemberInvite } from '../entities/member-invite.entity';
+
+import { RegisterMemberDto } from '../dto/register-member.dto';
+import { UpdateMemberNameDto } from '../dto/update-member-name.dto';
+import { MemberResponseDto } from '../dto/member-response.dto';
+import { CreateMemberInviteDto } from '../dto/create-member-invite.dto';
+import { ListOptionsDto } from '../dto/list-options.dto';
 
 @Injectable()
 export class MembersService {
@@ -92,7 +91,7 @@ export class MembersService {
       invite = this.memberInvitesRepository.create(createMemberInviteDto);
     }
 
-    invite.token = randomBytes(64).toString('base64');
+    invite.token = CryptoHelper.generateRandomToken(64);
 
     await this.memberInvitesRepository.save(invite);
 

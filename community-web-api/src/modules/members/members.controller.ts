@@ -9,16 +9,14 @@ import {
   Query,
 } from '@nestjs/common';
 
-import {
-  CreateMemberInviteDto,
-  ListOptionsDto,
-  MemberResponseDto,
-  RegisterMemberDto,
-  ResultResponseDto,
-  UpdateMemberNameDto,
-  ValidateMemberInviteDto,
-} from './dto';
-import { MembersService } from './services';
+import { CreateMemberInviteDto } from './dto/create-member-invite.dto';
+import { ListOptionsDto } from './dto/list-options.dto';
+import { MemberResponseDto } from './dto/member-response.dto';
+import { RegisterMemberDto } from './dto/register-member.dto';
+import { ResultResponseDto } from './dto/result-response.dto';
+import { UpdateMemberNameDto } from './dto/update-member-name.dto';
+import { ValidateMemberInviteDto } from './dto/validate-member-invite.dto';
+import { MembersService } from './services/members.service';
 
 @Controller('api/members')
 export class MembersController {

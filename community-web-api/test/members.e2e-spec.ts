@@ -8,13 +8,12 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 
 import { AppModule } from '../src/app.module';
-import { Member, MemberInvite } from '../src/modules/members/entities';
-import {
-  UpdateMemberNameDto,
-  MemberResponseDto,
-  CreateMemberInviteDto,
-  RegisterMemberDto,
-} from '../src/modules/members/dto';
+import { Member } from '../src/modules/members/entities/member.entity';
+import { MemberInvite } from '../src/modules/members/entities/member-invite.entity';
+import { UpdateMemberNameDto } from '../src/modules/members/dto/update-member-name.dto';
+import { MemberResponseDto } from '../src/modules/members/dto/member-response.dto';
+import { CreateMemberInviteDto } from '../src/modules/members/dto/create-member-invite.dto';
+import { RegisterMemberDto } from '../src/modules/members/dto/register-member.dto';
 
 describe('MembersController (e2e)', () => {
   // test data
