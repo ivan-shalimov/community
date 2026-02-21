@@ -24,5 +24,11 @@
       "jest",
       "node"
     ]
-  }
+  },
+  "watchOptions": {
+    "watchFile": "fixedPollingInterval",
+    "watchDirectory": "dynamicPriorityPolling",
+    "fallbackPolling": "dynamicPriority",
+    "synchronousWatchDirectory": true
+  },
 }
