@@ -32,7 +32,7 @@ This module manages the community's members, handling the complete lifecycle fro
 | Method | Endpoint | Description | Request Body |
 |--------|----------|-------------|--------------|
 | POST | `/api/members/invite` | Create a member invitation | `CreateMemberInviteDto` |
-| GET | `/api/members/invite/verify/:token?email=` | Verify invitation token | Query params |
+| GET | `/api/members/invite/verify?token=&email=` | Verify invitation token | Query params |
 | POST | `/api/members/register` | Register a new member with valid invite | `RegisterMemberDto` |
 | GET | `/api/members` | Get all members | - |
 | GET | `/api/members/:id` | Get member by ID | - |
@@ -75,8 +75,8 @@ sequenceDiagram
         InviteService->>Database: Create new invite with unique token
     end
     Database-->>InviteService: Return invite
-    InviteService-->>Controller: Return invite details
-    Controller-->>Client: 201 Created with token
+    InviteService-->>Controller: Invite email sent
+    Controller-->>Client: 201 Created (empty body)
 ```
 
 ### Member Registration Flow
@@ -98,7 +98,7 @@ sequenceDiagram
     alt Invalid Invite
         Database-->>InviteService: Not found/mismatch
         InviteService-->>ValidationPipe: Invalid
-        ValidationPipe-->>Client: 403 Forbidden
+        ValidationPipe-->>Client: 400 Bad Request
     else Valid Invite
         Database-->>InviteService: Valid invite
         InviteService-->>ValidationPipe: Valid
@@ -119,7 +119,7 @@ sequenceDiagram
     participant InviteService
     participant Database
 
-    Client->>Controller: GET /api/members/invite/verify/:token?email=xxx
+    Client->>Controller: GET /api/members/invite/verify?token=xxx&email=xxx
     Controller->>InviteService: verify(token, email)
     InviteService->>Database: Find invite by token and email
     
@@ -130,7 +130,7 @@ sequenceDiagram
     else Invalid
         Database-->>InviteService: Not found
         InviteService-->>Controller: false
-        Controller-->>Client: 403 Forbidden
+        Controller-->>Client: 400 Bad Request
     end
 ```
 

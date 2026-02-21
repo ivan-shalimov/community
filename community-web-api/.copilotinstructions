@@ -24,7 +24,6 @@ src/modules/{domain}/
 ├── dto/                      # Data Transfer Objects
 ├── entities/                 # TypeORM entities
 ├── services/                 # Business logic
-└── validation/               # Custom validators & pipes
 ```
 
 ### Code Patterns
@@ -53,11 +52,11 @@ export class Member {
 - Create separate DTOs for different operations (Create, Update, Register, etc.)
 - Use static factory methods: `static fromEntity = (entity: Entity): Dto => ...`
 - Implement validation with Zod schemas and `createZodDto`
-- Export all DTOs and schemas from `dto/index.ts`
 - For query params, use `z.coerce.number()` when numbers are expected
 
 #### Service Layer
-- Inject repositories using `@InjectRepository(Entity)`
+- Prefer custom repository wrapper classes in `repositories/` (or `data-access/`) for domain data operations
+- Inside repository wrappers, inject TypeORM repositories using `@InjectRepository(Entity)`
 - Use TypeORM Repository pattern
 - Implement business logic in services, not controllers
 - Service methods may accept DTOs and/or entities as input parameters
@@ -69,14 +68,9 @@ export class Member {
 - Use `@Controller('api/{resource}')` for all endpoints
 - Inject required services via constructor
 - Use appropriate HTTP decorators (@Get, @Post, @Put, @Delete)
-- Use `ZodValidationPipe` for `@Body()`, `@Query()`, and `@Param()` inputs
 - If a route uses both params and query, validate both explicitly to avoid drift
 - Do not use Promise chaining notation in controllers (for example, `.then(...)`). Use `async/await` instead.
-- Handle errors with NestJS exceptions (NotFoundException, ForbiddenException, etc.)
-
-#### Custom Validation
-- Create validation pipes for entity existence checks
-- Place validation logic in `validation/` directory
+- Handle errors with NestJS exceptions (BadRequestException, ForbiddenException, etc.)
 
 ### Database & Configuration
 
@@ -123,12 +117,11 @@ Always use ConfigService for environment variables:
 
 #### File Organization
 - Group related files in appropriate directories
-- Use index.ts files to manage exports
 - Keep modules focused and cohesive
-- Separate concerns (entities, DTOs, services, validation)
+- Separate concerns (entities, DTOs, services, repositories)
 
 #### Comments & Documentation
-- Add JSDoc comments for public methods
+- Add JSDoc comments for public methods with non-trivial behavior (required for complex business logic; optional for simple pass-through methods)
 - Include inline comments for complex business logic
 - Document entity relationships and constraints
 - Maintain README files for each module
@@ -159,7 +152,6 @@ This application manages local communities with these core concepts:
 
 ### Dependencies & Imports
 - Import from relative paths for local modules
-- Use barrel exports (index.ts) to simplify imports
 - Group imports: external libraries first, then internal modules
 - Use TypeORM decorators and NestJS decorators consistently
 
