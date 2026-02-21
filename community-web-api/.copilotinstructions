@@ -60,7 +60,8 @@ export class Member {
 - Inject repositories using `@InjectRepository(Entity)`
 - Use TypeORM Repository pattern
 - Implement business logic in services, not controllers
-- Return DTOs from service methods, not entities directly
+- Service methods may accept DTOs and/or entities as input parameters
+- Service methods should return entities or simple types (for example: `string`, `boolean`, `number`, or plain result objects)
 - Services are responsible for business rule validation (distinct from input/schema validation)
 
 

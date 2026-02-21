@@ -15,8 +15,8 @@ export class MembersController {
   constructor(private readonly membersService: MembersService) {}
 
   @Post('invite')
-  invite(@Body() inviteMemberDto: CreateMemberInviteDto): Promise<void> {
-    return this.membersService.createInvite(inviteMemberDto);
+  async invite(@Body() inviteMemberDto: CreateMemberInviteDto): Promise<void> {
+    await this.membersService.createInvite(inviteMemberDto);
   }
 
   @Get('invite/verify')
@@ -38,7 +38,8 @@ export class MembersController {
       registerMemberDto.email,
     );
 
-    return this.membersService.register(invite, registerMemberDto);
+    const member = await this.membersService.register(invite, registerMemberDto);
+    return MemberResponseDto.fromEntity(member);
   }
 
   @Get()
