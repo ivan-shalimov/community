@@ -5,33 +5,33 @@ export class Init1770741238005 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-            CREATE TABLE "member" (
+            CREATE TABLE "members" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "name" character varying NOT NULL,
                 "email" character varying NOT NULL,
-                CONSTRAINT "UQ_4678079964ab375b2b31849456c" UNIQUE ("email"),
-                CONSTRAINT "PK_97cbbe986ce9d14ca5894fdc072" PRIMARY KEY ("id")
+                CONSTRAINT "UQ_MEMBER_EMAIL" UNIQUE ("email"),
+                CONSTRAINT "PK_MEMBER" PRIMARY KEY ("id")
             )
         `);
     await queryRunner.query(`
-            CREATE TABLE "member_invite" (
+            CREATE TABLE "member_invites" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "token" character varying NOT NULL,
                 "name" character varying NOT NULL,
                 "email" character varying NOT NULL,
-                CONSTRAINT "UQ_44b26d6a44614b937d36c211f66" UNIQUE ("token"),
-                CONSTRAINT "UQ_5b4202b7385c69401bc94087f57" UNIQUE ("email"),
-                CONSTRAINT "PK_ad218fc9af22b90a68b2e839850" PRIMARY KEY ("id")
+                CONSTRAINT "UQ_MEMBER_INVITE_TOKEN" UNIQUE ("token"),
+                CONSTRAINT "UQ_MEMBER_INVITE_EMAIL" UNIQUE ("email"),
+                CONSTRAINT "PK_MEMBER_INVITE" PRIMARY KEY ("id")
             )
         `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-            DROP TABLE "member_invite"
+            DROP TABLE "member_invites"
         `);
     await queryRunner.query(`
-            DROP TABLE "member"
+            DROP TABLE "members"
         `);
   }
 }

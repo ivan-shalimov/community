@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'members' })
 // This entity represents a member of the community.
 // It is used to track the members that have been created when invites are accepted.
 export class Member {
