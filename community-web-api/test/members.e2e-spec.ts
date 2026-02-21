@@ -11,14 +11,14 @@ import { AppModule } from '../src/app.module';
 import { Member, MemberInvite } from '../src/modules/members/entities';
 import {
   UpdateMemberNameDto,
-  MemberDto,
+  MemberResponseDto,
   CreateMemberInviteDto,
   RegisterMemberDto,
 } from '../src/modules/members/dto';
 
 describe('MembersController (e2e)', () => {
   // test data
-  const testMember: MemberDto = {
+  const testMember: MemberResponseDto = {
     id: '',
     name: 'test',
     email: 'test@example.com',
@@ -132,7 +132,10 @@ describe('MembersController (e2e)', () => {
 
     expect(mockMailerService.sendMail).toHaveBeenCalledWith(
       expect.objectContaining({
-        to: `"${dto.name}" <${dto.email}>`,
+        to: {
+          name: dto.name,
+          address: dto.email,
+        },
         subject: 'You are invited to join Community',
         template: 'invite',
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

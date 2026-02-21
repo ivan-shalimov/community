@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 
-import { ICommonConfig } from '../config/interfaces';
+import { ICommonConfig } from '../../../../config/interfaces';
 
 @Injectable()
 export class EmailService {
@@ -19,7 +19,10 @@ export class EmailService {
     const config = this.configService.getOrThrow<ICommonConfig>('common');
 
     await this.mailerService.sendMail({
-      to: `"${name}" <${email}>`,
+      to: {
+        name,
+        address: email,
+      },
       subject: 'You are invited to join Community',
       template: 'invite',
       context: {

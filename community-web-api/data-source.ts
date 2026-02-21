@@ -17,7 +17,9 @@ if (!POSTGRES_PORT_ENV) {
 const POSTGRES_PORT = Number(POSTGRES_PORT_ENV);
 
 if (!Number.isInteger(POSTGRES_PORT) || POSTGRES_PORT <= 0) {
-  throw new Error('Environment variable POSTGRES_PORT must be a positive integer');
+  throw new Error(
+    'Environment variable POSTGRES_PORT must be a positive integer',
+  );
 }
 
 if (!POSTGRES_USER) {
@@ -42,5 +44,5 @@ export default new DataSource({
   database: POSTGRES_DATABASE,
 
   entities: ['dist/**/entities/*.js'],
-  migrations: ['db/*.ts'],
+  migrations: ['migrations/*.ts'],
 });

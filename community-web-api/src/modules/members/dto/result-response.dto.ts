@@ -1,3 +1,3 @@
-export class ResultDto {
+export class ResultResponseDto {
   constructor(public value: boolean) {}
 }

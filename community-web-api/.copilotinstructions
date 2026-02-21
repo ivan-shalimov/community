@@ -70,6 +70,7 @@ export class Member {
 - Use appropriate HTTP decorators (@Get, @Post, @Put, @Delete)
 - Use `ZodValidationPipe` for `@Body()`, `@Query()`, and `@Param()` inputs
 - If a route uses both params and query, validate both explicitly to avoid drift
+- Do not use Promise chaining notation in controllers (for example, `.then(...)`). Use `async/await` instead.
 - Handle errors with NestJS exceptions (NotFoundException, ForbiddenException, etc.)
 
 #### Custom Validation
@@ -86,7 +87,7 @@ Always use ConfigService for environment variables:
 
 #### Migrations
 - Database changes should use TypeORM migrations
-- Place migrations in `db/` directory
+- Place migrations in `migrations/` directory
 - Use descriptive migration names with timestamps
 
 ### Testing Conventions

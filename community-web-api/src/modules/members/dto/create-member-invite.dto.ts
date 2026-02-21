@@ -2,7 +2,7 @@ import { createZodDto } from 'nestjs-zod';
 import * as z from 'zod';
 
 export const CreateMemberInviteSchema = z.object({
-  name: z.string().nonempty(),
+  name: z.string().min(1),
   email: z.email(),
 });
 

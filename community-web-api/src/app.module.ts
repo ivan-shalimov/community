@@ -2,17 +2,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_PIPE, APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
 
-import { MailerModule } from '@nestjs-modules/mailer';
 import { ZodValidationPipe, ZodSerializerInterceptor } from 'nestjs-zod';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import {
-  typeOrmOptionsFactory,
-  configuration,
-  mailerOptionsFactory,
-} from './config';
+import { typeOrmOptionsFactory, configuration } from './config';
 import { HttpExceptionFilter } from './common/http-exception.filter';
 import { MembersModule } from './modules/members/members.module';
+import { EmailModule } from './common/modules/emails/email/email.module';
 
 @Module({
   imports: [
@@ -27,11 +23,9 @@ import { MembersModule } from './modules/members/members.module';
       useFactory: typeOrmOptionsFactory,
       inject: [ConfigService],
     }),
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: mailerOptionsFactory,
-      inject: [ConfigService],
-    }),
+    // common
+    EmailModule,
+    // domain
     MembersModule,
   ],
   controllers: [],

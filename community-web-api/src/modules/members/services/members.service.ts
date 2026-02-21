@@ -9,12 +9,12 @@ import { Member } from '../entities/member.entity';
 import {
   RegisterMemberDto,
   UpdateMemberNameDto,
-  MemberDto,
+  MemberResponseDto,
   CreateMemberInviteDto,
   ListOptionsDto,
 } from '../dto';
 import { MemberInvite } from '../entities';
-import { EmailService } from '../../../common/email.service';
+import { EmailService } from '../../../common/modules/emails/email/email.service';
 
 @Injectable()
 export class MembersService {
@@ -29,7 +29,7 @@ export class MembersService {
   async register(
     invite: MemberInvite,
     registerMemberDto: RegisterMemberDto,
-  ): Promise<MemberDto> {
+  ): Promise<MemberResponseDto> {
     return this.membersRepository.manager.transaction(
       async (transactionalEntityManager) => {
         const membersRepository =
@@ -40,7 +40,7 @@ export class MembersService {
         const entity = membersRepository.create(registerMemberDto);
         await membersRepository.save(entity);
         await memberInvitesRepository.delete(invite.id);
-        return MemberDto.fromEntity(entity);
+        return MemberResponseDto.fromEntity(entity);
       },
     );
   }

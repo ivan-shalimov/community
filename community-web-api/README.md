@@ -55,11 +55,11 @@ $ npm run test:cov
 
 ```bash
 # generate migration
-$ npx typeorm migration:generate -d dist/data-source.js db/<new migration name> -p
+$ migration:add
 
 # apply pending migrations
-$ npx typeorm-ts-node-commonjs migration:run -d dist/data-source.js
+$ migration:run
 
 # revert the latest migrations
-$ npx typeorm-ts-node-commonjs migration:revert -d dist/data-source.js
+$ migration:revert
 ```

@@ -12,9 +12,9 @@ import {
 import {
   CreateMemberInviteDto,
   ListOptionsDto,
-  MemberDto,
+  MemberResponseDto,
   RegisterMemberDto,
-  ResultDto,
+  ResultResponseDto,
   UpdateMemberNameDto,
   ValidateMemberInviteDto,
 } from './dto';
@@ -32,19 +32,19 @@ export class MembersController {
   @Get('invite/verify')
   async verify(
     @Query() validateMemberInviteDto: ValidateMemberInviteDto,
-  ): Promise<ResultDto> {
+  ): Promise<ResultResponseDto> {
     await this.membersService.findInviteByTokenAndEmailOrThrowError(
       validateMemberInviteDto.token,
       validateMemberInviteDto.email,
     );
 
-    return new ResultDto(true);
+    return new ResultResponseDto(true);
   }
 
   @Post('register')
   async register(
     @Body() registerMemberDto: RegisterMemberDto,
-  ): Promise<MemberDto> {
+  ): Promise<MemberResponseDto> {
     const invite =
       await this.membersService.findInviteByTokenAndEmailOrThrowError(
         registerMemberDto.token,
@@ -55,18 +55,17 @@ export class MembersController {
   }
 
   @Get()
-  find(@Query() listOptionsDto: ListOptionsDto): Promise<MemberDto[]> {
-    return this.membersService
-      .find(listOptionsDto)
-      .then((entities) =>
-        entities.map((entity) => MemberDto.fromEntity(entity)),
-      );
+  async find(
+    @Query() listOptionsDto: ListOptionsDto,
+  ): Promise<MemberResponseDto[]> {
+    const entities = await this.membersService.find(listOptionsDto);
+    return entities.map((entity) => MemberResponseDto.fromEntity(entity));
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<MemberDto> {
+  async findOne(@Param('id') id: string): Promise<MemberResponseDto> {
     const member = await this.membersService.findByIdOrThrowError(id);
-    return MemberDto.fromEntity(member);
+    return MemberResponseDto.fromEntity(member);
   }
 
   @Put(':id/name')
