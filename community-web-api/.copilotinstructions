@@ -69,7 +69,7 @@ export class Member {
 - Inject required services via constructor
 - Use appropriate HTTP decorators (@Get, @Post, @Put, @Delete)
 - If a route uses both params and query, validate both explicitly to avoid drift
-- Do not use Promise chaining notation in controllers (for example, `.then(...)`). Use `async/await` instead.
+- Do not use Promise chaining notation (for example, `.then(...)`) anywhere in the codebase. Use `async/await` instead.
 - Handle errors with NestJS exceptions (BadRequestException, ForbiddenException, etc.)
 
 ### Database & Configuration

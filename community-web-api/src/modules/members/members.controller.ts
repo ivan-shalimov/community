@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 
 import { MembersService } from './services/members.service';
 
@@ -16,6 +26,12 @@ export class MembersController {
 
   @Post('invite')
   async invite(@Body() inviteMemberDto: CreateMemberInviteDto): Promise<void> {
+    if (await this.membersService.isEmailUsedByMember(inviteMemberDto.email)) {
+      throw new BadRequestException(
+        `Email ${inviteMemberDto.email} is already used by another member`,
+      );
+    }
+
     await this.membersService.createInvite(inviteMemberDto);
   }
 
@@ -33,6 +49,12 @@ export class MembersController {
 
   @Post('register')
   async register(@Body() registerMemberDto: RegisterMemberDto): Promise<MemberResponseDto> {
+    if (await this.membersService.isEmailUsedByMember(registerMemberDto.email)) {
+      throw new BadRequestException(
+        `Email ${registerMemberDto.email} is already used by another member`,
+      );
+    }
+
     const invite = await this.membersService.findInviteByTokenAndEmailOrThrowError(
       registerMemberDto.token,
       registerMemberDto.email,

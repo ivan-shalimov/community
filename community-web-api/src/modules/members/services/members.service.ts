@@ -34,18 +34,23 @@ export class MembersService {
     return this.memberRepository.getList(options.page, options.pageSize);
   }
 
-  findByIdOrThrowError(id: string): Promise<Member> {
-    return this.memberRepository.getById(id).then((entity) => {
-      if (entity == null) {
-        throw new BadRequestException(`Member with id ${id} not found`);
-      }
+  async findByIdOrThrowError(id: string): Promise<Member> {
+    const entity = await this.memberRepository.getById(id);
+    if (entity == null) {
+      throw new BadRequestException(`Member with id ${id} not found`);
+    }
 
-      return entity;
-    });
+    return entity;
   }
 
-  hasMemberWith(email: string): Promise<boolean> {
-    return this.memberRepository.getByEmail(email).then((entity) => entity != null);
+  async isEmailUsedByMember(email: string): Promise<boolean> {
+    const entity = await this.memberRepository.getByEmail(email);
+    return entity != null;
+  }
+
+  async hasMemberWith(email: string): Promise<boolean> {
+    const entity = await this.memberRepository.getByEmail(email);
+    return entity != null;
   }
 
   async updateName(id: string, updateMemberNameDto: UpdateMemberNameDto): Promise<void> {
