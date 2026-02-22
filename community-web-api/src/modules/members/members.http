@@ -1,0 +1,44 @@
+@baseUrl = http://localhost:3000/api/members
+
+### Create Member Invite
+POST {{baseUrl}}/invite
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com"
+}
+
+### Verify Member Invite
+GET {{baseUrl}}/invite/verify/some-unique-token?email=john.doe@example.com
+Accept: application/json
+
+### Register Member
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "token": "some-unique-token",
+  "name": "John Doe",
+  "email": "john.doe@example.com"
+}
+
+### Get All Members
+GET {{baseUrl}}
+Accept: application/json
+
+### Get Member by ID
+GET {{baseUrl}}/123e4567-e89b-12d3-a456-426614174000
+Accept: application/json
+
+### Update Member Name
+PUT {{baseUrl}}/123e4567-e89b-12d3-a456-426614174000/name
+Content-Type: application/json
+
+{
+  "name": "John Smith"
+}
+
+### Delete Member
+DELETE {{baseUrl}}/123e4567-e89b-12d3-a456-426614174000
+Accept: application/json
