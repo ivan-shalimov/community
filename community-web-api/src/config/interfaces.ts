@@ -17,6 +17,8 @@ export interface ICommonConfig {
   adminName: string;
   adminEmail: string;
   portalUrl: string;
+  // consider to move to separate secure config interface if we have more secure settings in the future
+  jwtSecret: string;
 }
 
 export interface AppConfig {

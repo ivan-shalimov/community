@@ -52,6 +52,7 @@ export class Member {
 - Create separate DTOs for different operations (Create, Update, Register, etc.)
 - Use static factory methods: `static fromEntity = (entity: Entity): Dto => ...`
 - Implement validation with Zod schemas and `createZodDto`
+- For email fields, use `z.email()` as the canonical pattern; do not suggest `z.string().email()`
 - For query params, use `z.coerce.number()` when numbers are expected
 
 #### Service Layer

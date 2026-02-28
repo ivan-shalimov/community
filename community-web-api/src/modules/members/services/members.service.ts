@@ -43,12 +43,12 @@ export class MembersService {
     return entity;
   }
 
-  async isEmailUsedByMember(email: string): Promise<boolean> {
+  async findByEmail(email: string): Promise<Member | null> {
     const entity = await this.memberRepository.getByEmail(email);
-    return entity != null;
+    return entity;
   }
 
-  async hasMemberWith(email: string): Promise<boolean> {
+  async isEmailUsedByMember(email: string): Promise<boolean> {
     const entity = await this.memberRepository.getByEmail(email);
     return entity != null;
   }

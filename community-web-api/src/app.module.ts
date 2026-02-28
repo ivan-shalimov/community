@@ -9,6 +9,7 @@ import { HttpExceptionFilter } from './common/http-exception.filter';
 import { EmailModule } from './common/modules/emails/email/email.module';
 import { configuration } from './config/configuration';
 import { typeOrmOptionsFactory } from './config/type-orm-options.factory';
+import { AuthModule } from './modules/auth/auth.module';
 import { MembersModule } from './modules/members/members.module';
 
 @Module({
@@ -28,6 +29,7 @@ import { MembersModule } from './modules/members/members.module';
     EmailModule,
     // domain
     MembersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [

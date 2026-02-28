@@ -14,6 +14,7 @@ export const configuration = (): AppConfig => {
       adminEmail: result.data.ADMIN_EMAIL,
       portalUrl: result.data.PORTAL_URL,
       port: result.data.PORT,
+      jwtSecret: result.data.JWT_SECRET,
     },
     database: {
       host: result.data.POSTGRES_HOST,

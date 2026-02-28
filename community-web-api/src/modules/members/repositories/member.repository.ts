@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { Repository } from 'typeorm';
 
+import { CryptoHelper } from '../../../common/crypto.helper';
+
 import { RegisterMemberDto } from '../dto/register-member.dto';
 
 import { MemberInvite } from '../entities/member-invite.entity';
@@ -47,6 +49,12 @@ export class MemberRepository {
       const memberInvitesRepository = transactionalEntityManager.getRepository(MemberInvite);
 
       const entity = membersRepository.create(registerMemberDto);
+
+      const { hash, salt } = await CryptoHelper.hashPassword(registerMemberDto.password);
+      entity.password = hash;
+      entity.salt = salt;
+
+      entity.createdAt = new Date();
       await membersRepository.save(entity);
       await memberInvitesRepository.delete(inviteId);
 
