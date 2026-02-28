@@ -15,4 +15,7 @@ export const EnvSchema = z.object({
   // mailer configuration
   MAILER_HOST: z.string().min(1),
   MAILER_PORT: z.coerce.number().min(1).max(65535),
+
+  // Secure
+  JWT_SECRET: z.string().min(32),
 });

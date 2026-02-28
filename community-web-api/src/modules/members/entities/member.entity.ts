@@ -15,4 +15,16 @@ export class Member {
   @Column({ unique: true })
   // The email of the member.
   email!: string;
+
+  @Column({ name: 'created_at' })
+  // The date and time when the member was created.
+  createdAt!: Date;
+
+  @Column()
+  // The hashed password of the member.
+  password!: string;
+
+  @Column()
+  // The salt used to hash the password.
+  salt!: string;
 }
