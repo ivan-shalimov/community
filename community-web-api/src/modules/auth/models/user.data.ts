@@ -3,5 +3,6 @@ export class UserData {
     public id: string,
     public email: string,
     public name: string,
+    public sessionId?: string,
   ) {}
 }

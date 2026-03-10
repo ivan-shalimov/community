@@ -9,12 +9,15 @@ export const configuration = (): AppConfig => {
   }
 
   return {
+    secure: {
+      jwtSecret: result.data.JWT_SECRET,
+      jwtRefreshSecret: result.data.JWT_REFRESH_SECRET,
+    },
     common: {
       adminName: result.data.ADMIN_NAME,
       adminEmail: result.data.ADMIN_EMAIL,
       portalUrl: result.data.PORTAL_URL,
       port: result.data.PORT,
-      jwtSecret: result.data.JWT_SECRET,
     },
     database: {
       host: result.data.POSTGRES_HOST,

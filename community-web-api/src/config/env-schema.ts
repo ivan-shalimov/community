@@ -18,4 +18,5 @@ export const EnvSchema = z.object({
 
   // Secure
   JWT_SECRET: z.string().min(32),
+  JWT_REFRESH_SECRET: z.string().min(32),
 });
