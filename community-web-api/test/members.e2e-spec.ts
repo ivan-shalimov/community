@@ -7,6 +7,8 @@ import { App } from 'supertest/types';
 import { DataSource, Repository } from 'typeorm';
 
 import { AppModule } from '../src/app.module';
+import { CryptoHelper } from '../src/common/crypto.helper';
+import { LoginResponseDto } from '../src/modules/auth/models/login-response.dto';
 import { CreateMemberInviteDto } from '../src/modules/members/dto/create-member-invite.dto';
 import { MemberResponseDto } from '../src/modules/members/dto/member-response.dto';
 import { RegisterMemberDto } from '../src/modules/members/dto/register-member.dto';
@@ -22,13 +24,20 @@ describe('MembersController (e2e)', () => {
     email: 'test@example.com',
   };
 
+  let accessToken: string;
+
   async function addTestMember() {
     // Clean up any existing member first
     await membersRepository.delete({ email: testMember.email });
 
+    const { hash, salt } = await CryptoHelper.hashPassword('Password1!');
+
     const entity = membersRepository.create({
       name: testMember.name,
       email: testMember.email,
+      password: hash,
+      salt: salt,
+      createdAt: new Date(),
     });
     const result = await membersRepository.save(entity);
     testMember.id = result.id;
@@ -36,6 +45,19 @@ describe('MembersController (e2e)', () => {
 
   async function deleteTestMember() {
     await membersRepository.delete({ id: testMember.id });
+  }
+
+  async function login() {
+    const agent = request.agent(app.getHttpServer()); // The agent maintains the session automatically
+
+    const result = await agent
+      .post('/api/auth/login')
+      .send({ email: testMember.email, password: 'Password1!' });
+
+    console.log('Login response status:', result.status);
+    console.log('Login response body:', result.body);
+
+    accessToken = (result.body as LoginResponseDto).accessToken;
   }
 
   let app: INestApplication<App>;
@@ -59,6 +81,8 @@ describe('MembersController (e2e)', () => {
     const dataSource = await app.resolve<DataSource>(DataSource);
     memberInvitesRepository = dataSource.getRepository<MemberInvite>(MemberInvite);
     membersRepository = dataSource.getRepository<Member>(Member);
+
+    await login();
   });
 
   afterAll(async () => {
@@ -72,8 +96,9 @@ describe('MembersController (e2e)', () => {
   it('/api/members (GET)', async () => {
     await addTestMember();
 
-    await request(app.getHttpServer())
+    await request(app.getHttpServer(), {})
       .get('/api/members')
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect(200)
       .expect((res) => {
         expect(Array.isArray(res.body)).toBe(true);
@@ -88,6 +113,7 @@ describe('MembersController (e2e)', () => {
 
     await request(app.getHttpServer())
       .get(`/api/members/${testMember.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect(200)
       .expect((res) => {
         expect(res.body).toEqual(testMember);
@@ -109,6 +135,7 @@ describe('MembersController (e2e)', () => {
     await request(app.getHttpServer())
       .post('/api/members/invite')
       .send(dto)
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect((res) => {
         if (res.status !== 201) {
           // todo remove when logging functionality is added to the app
@@ -180,6 +207,7 @@ describe('MembersController (e2e)', () => {
       name: 'invited member',
       email: 'invited@example.com',
       token: 'testtoken123',
+      password: 'Password1!',
     };
 
     // Clean up any existing invite and member first
@@ -227,6 +255,7 @@ describe('MembersController (e2e)', () => {
     const dto: UpdateMemberNameDto = { name: 'changed' };
     await request(app.getHttpServer())
       .put(`/api/members/${testMember.id}/name`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send(dto)
       .expect(200);
 
@@ -244,7 +273,10 @@ describe('MembersController (e2e)', () => {
   it('/api/members/:id (DELETE)', async () => {
     await addTestMember();
 
-    await request(app.getHttpServer()).delete(`/api/members/${testMember.id}`).expect(200);
+    await request(app.getHttpServer())
+      .delete(`/api/members/${testMember.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
 
     const result = await membersRepository.findOneBy({ id: testMember.id });
     expect(result).toBeNull();

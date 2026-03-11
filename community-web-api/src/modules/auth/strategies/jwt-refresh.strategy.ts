@@ -10,7 +10,7 @@ import { JwtPayload } from '../models/jwt-payload';
 import { UserData } from '../models/user.data';
 
 @Injectable()
-export class JwtRefreshStrategy extends PassportStrategy(Strategy) {
+export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor(
     configService: ConfigService,
     private authService: AuthService,
