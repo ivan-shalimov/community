@@ -1,4 +1,9 @@
+import * as dotenv from 'dotenv';
+import * as path from 'path';
 import { DataSource } from 'typeorm';
+
+// Manually load the env file: __dirname is /workspaces/Community/community-web-api/dist
+dotenv.config({ path: path.join(__dirname, `../.env`) });
 
 const POSTGRES_HOST = process.env.POSTGRES_HOST;
 const POSTGRES_PORT_ENV = process.env.POSTGRES_PORT;

@@ -152,4 +152,24 @@ describe('AuthController (e2e)', () => {
   it('/api/auth/refresh (POST) - should reject missing refresh token', async () => {
     await request(app.getHttpServer()).post('/api/auth/refresh').expect(401);
   });
+
+  it('/api/auth/logout (POST) - should revoke current refresh session', async () => {
+    const currentRefreshToken = refreshToken;
+
+    await request(app.getHttpServer())
+      .post('/api/auth/logout')
+      .set('Authorization', `Bearer ${currentRefreshToken}`)
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .post('/api/auth/refresh')
+      .set('Authorization', `Bearer ${currentRefreshToken}`)
+      .expect(401);
+
+    await login();
+  });
+
+  it('/api/auth/logout (POST) - should reject missing refresh token', async () => {
+    await request(app.getHttpServer()).post('/api/auth/logout').expect(401);
+  });
 });

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 
@@ -51,24 +51,39 @@ export class AuthService {
 
   async issueNewAccessToken(user: UserData): Promise<LoginResponseDto> {
     if (!user.sessionId) {
-      throw new Error('No session found for user');
+      throw new UnauthorizedException('No session found for user');
     }
     const session = await this.sessionRepository.getById(user.sessionId);
     if (!session) {
-      throw new Error('Session not found');
+      throw new UnauthorizedException('Session not found');
     }
 
     await this.sessionRepository.remove(user.sessionId);
     return await this.signIn(user);
   }
 
+  async logout(user: UserData): Promise<void> {
+    if (!user.sessionId) {
+      throw new UnauthorizedException('No session found for user');
+    }
+
+    const session = await this.sessionRepository.getById(user.sessionId);
+    if (!session) {
+      throw new UnauthorizedException('Session not found');
+    }
+
+    await this.sessionRepository.remove(user.sessionId);
+  }
+
   async validateUser(email: string, password: string): Promise<UserData | null> {
     const member = await this.membersService.findByEmail(email);
     if (member == null) {
+      console.log(`No member found with email: ${email}`);
       return null;
     }
 
     if (!(await CryptoHelper.verifyPassword(member.password, password))) {
+      console.log(`Invalid password for email: ${email}`);
       return null;
     }
 

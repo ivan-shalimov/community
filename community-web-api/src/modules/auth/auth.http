@@ -16,3 +16,12 @@ Content-Type: application/json
 GET {{baseUrl}}/profile
 Accept: application/json
 Authorization: Bearer {{login.response.body.accessToken}}
+
+### Refresh Tokens
+# @name refresh
+POST {{baseUrl}}/refresh
+Authorization: Bearer {{login.response.body.refreshToken}}
+
+### Logout
+POST {{baseUrl}}/logout
+Authorization: Bearer {{refresh.response.body.refreshToken}}

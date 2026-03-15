@@ -2,7 +2,8 @@ import { Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/
 
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
-import { PublicApi } from './decorators/public-api.decorator';
+import { UseLocalAuth } from './decorators/use-local-auth.decorator';
+import { UseRefreshAuth } from './decorators/use-refresh-auth.decorator';
 import { JwtRefreshAuthGuard } from './guards/jwt-refresh.guard';
 import { LocalAuthGuard } from './guards/local.guard';
 import { LoginResponseDto } from './models/login-response.dto';
@@ -13,7 +14,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @HttpCode(HttpStatus.OK)
-  @PublicApi()
+  @UseLocalAuth()
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@CurrentUser() user: UserData): Promise<LoginResponseDto> {
@@ -26,10 +27,18 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @PublicApi()
+  @UseRefreshAuth()
   @UseGuards(JwtRefreshAuthGuard)
   @Post('refresh')
   async refresh(@CurrentUser() user: UserData): Promise<LoginResponseDto> {
     return this.authService.issueNewAccessToken(user);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @UseRefreshAuth()
+  @UseGuards(JwtRefreshAuthGuard)
+  @Post('logout')
+  async logout(@CurrentUser() user: UserData): Promise<void> {
+    await this.authService.logout(user);
   }
 }

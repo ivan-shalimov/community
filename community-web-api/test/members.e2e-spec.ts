@@ -9,6 +9,7 @@ import { DataSource, Repository } from 'typeorm';
 import { AppModule } from '../src/app.module';
 import { CryptoHelper } from '../src/common/crypto.helper';
 import { LoginResponseDto } from '../src/modules/auth/models/login-response.dto';
+import { Session } from '../src/modules/auth/models/session.entity';
 import { CreateMemberInviteDto } from '../src/modules/members/dto/create-member-invite.dto';
 import { MemberResponseDto } from '../src/modules/members/dto/member-response.dto';
 import { RegisterMemberDto } from '../src/modules/members/dto/register-member.dto';
@@ -17,26 +18,51 @@ import { MemberInvite } from '../src/modules/members/entities/member-invite.enti
 import { Member } from '../src/modules/members/entities/member.entity';
 
 describe('MembersController (e2e)', () => {
+  const portalAdmin: MemberResponseDto = {
+    id: '',
+    name: 'Portal Admin',
+    email: 'admin@example.com',
+  };
   // test data
   const testMember: MemberResponseDto = {
     id: '',
-    name: 'test',
+    name: 'Test Member',
     email: 'test@example.com',
   };
 
   let accessToken: string;
 
+  async function addPortalAdmin() {
+    // Clean up any existing portal admin first
+    await membersRepository.delete({ email: portalAdmin.email });
+
+    const { hash, salt } = await CryptoHelper.hashPassword('AdminPassword1!');
+
+    const entity = membersRepository.create({
+      name: portalAdmin.name,
+      email: portalAdmin.email,
+      password: hash,
+      salt: salt,
+      createdAt: new Date(),
+    });
+    const result = await membersRepository.save(entity);
+    portalAdmin.id = result.id;
+  }
+
+  async function deletePortalAdmin() {
+    await membersRepository.delete({ id: portalAdmin.id });
+    await sessionsRepository.delete({ memberId: portalAdmin.id });
+  }
+
   async function addTestMember() {
     // Clean up any existing member first
     await membersRepository.delete({ email: testMember.email });
 
-    const { hash, salt } = await CryptoHelper.hashPassword('Password1!');
-
     const entity = membersRepository.create({
       name: testMember.name,
       email: testMember.email,
-      password: hash,
-      salt: salt,
+      password: 'hash', // it doesn't matter what the password is since we won't be logging in with this account, so we can use a dummy value here
+      salt: 'salt',
       createdAt: new Date(),
     });
     const result = await membersRepository.save(entity);
@@ -52,10 +78,12 @@ describe('MembersController (e2e)', () => {
 
     const result = await agent
       .post('/api/auth/login')
-      .send({ email: testMember.email, password: 'Password1!' });
+      .send({ email: portalAdmin.email, password: 'AdminPassword1!' });
 
-    console.log('Login response status:', result.status);
-    console.log('Login response body:', result.body);
+    if (result.status !== 200) {
+      console.error('Login failed with status:', result.status);
+      console.error('Response body:', result.body);
+    }
 
     accessToken = (result.body as LoginResponseDto).accessToken;
   }
@@ -63,6 +91,7 @@ describe('MembersController (e2e)', () => {
   let app: INestApplication<App>;
   let memberInvitesRepository: Repository<MemberInvite>;
   let membersRepository: Repository<Member>;
+  let sessionsRepository: Repository<Session>;
   const mockMailerService: Partial<MailerService> = {
     sendMail: jest.fn().mockResolvedValue({ messageId: 'mock-id' }),
   };
@@ -81,15 +110,23 @@ describe('MembersController (e2e)', () => {
     const dataSource = await app.resolve<DataSource>(DataSource);
     memberInvitesRepository = dataSource.getRepository<MemberInvite>(MemberInvite);
     membersRepository = dataSource.getRepository<Member>(Member);
+    sessionsRepository = dataSource.getRepository<Session>(Session);
 
+    await addPortalAdmin();
     await login();
   });
 
   afterAll(async () => {
+    if (testMember.id) {
+      await sessionsRepository.delete({ memberId: testMember.id });
+      await membersRepository.delete({ id: testMember.id });
+    }
+
     await app.close();
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await deletePortalAdmin();
     jest.clearAllMocks();
   });
 
