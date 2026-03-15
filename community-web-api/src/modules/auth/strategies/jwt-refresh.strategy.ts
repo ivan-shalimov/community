@@ -29,7 +29,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    // if session is valid, accespt the user data from the payload,
+    // if session is valid, accept the user data from the payload,
     // but use the memberId from the session because the payload sub is the session id, not the member id
     return new UserData(session.memberId, payload.email, payload.name, session.id);
   }
