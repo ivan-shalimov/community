@@ -1,11 +1,9 @@
-import { Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
-import { UseLocalAuth } from './decorators/use-local-auth.decorator';
-import { UseRefreshAuth } from './decorators/use-refresh-auth.decorator';
-import { JwtRefreshAuthGuard } from './guards/jwt-refresh.guard';
-import { LocalAuthGuard } from './guards/local.guard';
+import { UseJwtRefreshAuthGuard } from './decorators/use-jwt-refresh-auth.decorator';
+import { UseLocalAuthGuard } from './decorators/use-local-auth.decorator';
 import { LoginResponseDto } from './models/login-response.dto';
 import { UserData } from './models/user.data';
 
@@ -14,8 +12,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @HttpCode(HttpStatus.OK)
-  @UseLocalAuth()
-  @UseGuards(LocalAuthGuard)
+  @UseLocalAuthGuard()
   @Post('login')
   async login(@CurrentUser() user: UserData): Promise<LoginResponseDto> {
     return this.authService.signIn(user);
@@ -27,16 +24,14 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @UseRefreshAuth()
-  @UseGuards(JwtRefreshAuthGuard)
+  @UseJwtRefreshAuthGuard()
   @Post('refresh')
   async refresh(@CurrentUser() user: UserData): Promise<LoginResponseDto> {
     return this.authService.issueNewAccessToken(user);
   }
 
   @HttpCode(HttpStatus.OK)
-  @UseRefreshAuth()
-  @UseGuards(JwtRefreshAuthGuard)
+  @UseJwtRefreshAuthGuard()
   @Post('logout')
   async logout(@CurrentUser() user: UserData): Promise<void> {
     await this.authService.logout(user);

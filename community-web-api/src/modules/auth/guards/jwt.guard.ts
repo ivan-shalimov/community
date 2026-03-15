@@ -3,8 +3,8 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
 import { IS_PUBLIC_API_KEY } from '../decorators/public-api.decorator';
-import { IS_USE_LOCAL_AUTH_KEY } from '../decorators/use-local-auth.decorator';
-import { IS_USE_REFRESH_AUTH_KEY } from '../decorators/use-refresh-auth.decorator';
+import { IS_JWT_REFRESH_AUTH_USED_KEY } from '../decorators/use-jwt-refresh-auth.decorator';
+import { IS_LOCAL_AUTH_USED_KEY } from '../decorators/use-local-auth.decorator';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -19,8 +19,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     // if the route is marked as public or local auth or refresh auth, if so we skip jwt auth guard
     const skipJwt =
       this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_API_KEY, targets) ||
-      this.reflector.getAllAndOverride<boolean>(IS_USE_LOCAL_AUTH_KEY, targets) ||
-      this.reflector.getAllAndOverride<boolean>(IS_USE_REFRESH_AUTH_KEY, targets);
+      this.reflector.getAllAndOverride<boolean>(IS_LOCAL_AUTH_USED_KEY, targets) ||
+      this.reflector.getAllAndOverride<boolean>(IS_JWT_REFRESH_AUTH_USED_KEY, targets);
 
     if (skipJwt) {
       return true;

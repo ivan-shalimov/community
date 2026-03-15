@@ -1,4 +1,5 @@
-import { SetMetadata } from '@nestjs/common';
+import { LocalAuthGuard } from '../guards/local.guard';
+import { UseAuthGuard } from './use-auth-guard.decorator';
 
-export const IS_USE_LOCAL_AUTH_KEY = 'isUseLocalAuth';
-export const UseLocalAuth = () => SetMetadata(IS_USE_LOCAL_AUTH_KEY, true);
+export const IS_LOCAL_AUTH_USED_KEY = 'isLocalAuthUsed';
+export const UseLocalAuthGuard = () => UseAuthGuard(LocalAuthGuard, IS_LOCAL_AUTH_USED_KEY);
