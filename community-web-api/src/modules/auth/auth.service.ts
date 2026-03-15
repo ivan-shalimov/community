@@ -5,9 +5,9 @@ import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { CryptoHelper } from '../../common/crypto.helper';
 import { ISecureConfig } from '../../config/interfaces';
 import { MembersService } from '../members/services/members.service';
+import { Session } from './entities/session.entity';
 import { JwtPayload } from './models/jwt-payload';
 import { LoginResponseDto } from './models/login-response.dto';
-import { Session } from './models/session.entity';
 import { UserData } from './models/user.data';
 import { SessionRepository } from './repositories/session.repository';
 

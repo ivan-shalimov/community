@@ -8,8 +8,8 @@ import { DataSource, Repository } from 'typeorm';
 
 import { AppModule } from '../src/app.module';
 import { CryptoHelper } from '../src/common/crypto.helper';
+import { Session } from '../src/modules/auth/entities/session.entity';
 import { LoginResponseDto } from '../src/modules/auth/models/login-response.dto';
-import { Session } from '../src/modules/auth/models/session.entity';
 import { CreateMemberInviteDto } from '../src/modules/members/dto/create-member-invite.dto';
 import { MemberResponseDto } from '../src/modules/members/dto/member-response.dto';
 import { RegisterMemberDto } from '../src/modules/members/dto/register-member.dto';

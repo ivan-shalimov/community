@@ -8,8 +8,8 @@ import { DataSource, Repository } from 'typeorm';
 
 import { AppModule } from '../src/app.module';
 import { CryptoHelper } from '../src/common/crypto.helper';
+import { Session } from '../src/modules/auth/entities/session.entity';
 import { LoginResponseDto } from '../src/modules/auth/models/login-response.dto';
-import { Session } from '../src/modules/auth/models/session.entity';
 import { Member } from '../src/modules/members/entities/member.entity';
 
 describe('AuthController (e2e)', () => {
