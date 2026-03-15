@@ -122,11 +122,11 @@ describe('MembersController (e2e)', () => {
       await membersRepository.delete({ id: testMember.id });
     }
 
+    await deletePortalAdmin();
     await app.close();
   });
 
-  beforeEach(async () => {
-    await deletePortalAdmin();
+  beforeEach(() => {
     jest.clearAllMocks();
   });
 
