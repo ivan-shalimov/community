@@ -1,0 +1,27 @@
+@baseUrl = http://localhost:3000/api/auth
+@email = admin@community.local
+@password = Password1!
+
+### Login
+# @name login
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+	"email": "{{email}}",
+	"password": "{{password}}"
+}
+
+### Get Profile
+GET {{baseUrl}}/profile
+Accept: application/json
+Authorization: Bearer {{login.response.body.accessToken}}
+
+### Refresh Tokens
+# @name refresh
+POST {{baseUrl}}/refresh
+Authorization: Bearer {{login.response.body.refreshToken}}
+
+### Logout
+POST {{baseUrl}}/logout
+Authorization: Bearer {{refresh.response.body.refreshToken}}

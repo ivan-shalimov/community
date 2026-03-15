@@ -7,6 +7,9 @@ import { App } from 'supertest/types';
 import { DataSource, Repository } from 'typeorm';
 
 import { AppModule } from '../src/app.module';
+import { CryptoHelper } from '../src/common/crypto.helper';
+import { Session } from '../src/modules/auth/entities/session.entity';
+import { LoginResponseDto } from '../src/modules/auth/models/login-response.dto';
 import { CreateMemberInviteDto } from '../src/modules/members/dto/create-member-invite.dto';
 import { MemberResponseDto } from '../src/modules/members/dto/member-response.dto';
 import { RegisterMemberDto } from '../src/modules/members/dto/register-member.dto';
@@ -15,12 +18,41 @@ import { MemberInvite } from '../src/modules/members/entities/member-invite.enti
 import { Member } from '../src/modules/members/entities/member.entity';
 
 describe('MembersController (e2e)', () => {
+  const portalAdmin: MemberResponseDto = {
+    id: '',
+    name: 'Portal Admin',
+    email: 'admin@example.com',
+  };
   // test data
   const testMember: MemberResponseDto = {
     id: '',
-    name: 'test',
+    name: 'Test Member',
     email: 'test@example.com',
   };
+
+  let accessToken: string;
+
+  async function addPortalAdmin() {
+    // Clean up any existing portal admin first
+    await membersRepository.delete({ email: portalAdmin.email });
+
+    const { hash, salt } = await CryptoHelper.hashPassword('AdminPassword1!');
+
+    const entity = membersRepository.create({
+      name: portalAdmin.name,
+      email: portalAdmin.email,
+      password: hash,
+      salt: salt,
+      createdAt: new Date(),
+    });
+    const result = await membersRepository.save(entity);
+    portalAdmin.id = result.id;
+  }
+
+  async function deletePortalAdmin() {
+    await membersRepository.delete({ id: portalAdmin.id });
+    await sessionsRepository.delete({ memberId: portalAdmin.id });
+  }
 
   async function addTestMember() {
     // Clean up any existing member first
@@ -29,6 +61,9 @@ describe('MembersController (e2e)', () => {
     const entity = membersRepository.create({
       name: testMember.name,
       email: testMember.email,
+      password: 'hash', // it doesn't matter what the password is since we won't be logging in with this account, so we can use a dummy value here
+      salt: 'salt',
+      createdAt: new Date(),
     });
     const result = await membersRepository.save(entity);
     testMember.id = result.id;
@@ -38,9 +73,25 @@ describe('MembersController (e2e)', () => {
     await membersRepository.delete({ id: testMember.id });
   }
 
+  async function login() {
+    const agent = request.agent(app.getHttpServer()); // The agent maintains the session automatically
+
+    const result = await agent
+      .post('/api/auth/login')
+      .send({ email: portalAdmin.email, password: 'AdminPassword1!' });
+
+    if (result.status !== 200) {
+      console.error('Login failed with status:', result.status);
+      console.error('Response body:', result.body);
+    }
+
+    accessToken = (result.body as LoginResponseDto).accessToken;
+  }
+
   let app: INestApplication<App>;
   let memberInvitesRepository: Repository<MemberInvite>;
   let membersRepository: Repository<Member>;
+  let sessionsRepository: Repository<Session>;
   const mockMailerService: Partial<MailerService> = {
     sendMail: jest.fn().mockResolvedValue({ messageId: 'mock-id' }),
   };
@@ -59,9 +110,19 @@ describe('MembersController (e2e)', () => {
     const dataSource = await app.resolve<DataSource>(DataSource);
     memberInvitesRepository = dataSource.getRepository<MemberInvite>(MemberInvite);
     membersRepository = dataSource.getRepository<Member>(Member);
+    sessionsRepository = dataSource.getRepository<Session>(Session);
+
+    await addPortalAdmin();
+    await login();
   });
 
   afterAll(async () => {
+    if (testMember.id) {
+      await sessionsRepository.delete({ memberId: testMember.id });
+      await membersRepository.delete({ id: testMember.id });
+    }
+
+    await deletePortalAdmin();
     await app.close();
   });
 
@@ -72,8 +133,9 @@ describe('MembersController (e2e)', () => {
   it('/api/members (GET)', async () => {
     await addTestMember();
 
-    await request(app.getHttpServer())
+    await request(app.getHttpServer(), {})
       .get('/api/members')
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect(200)
       .expect((res) => {
         expect(Array.isArray(res.body)).toBe(true);
@@ -88,6 +150,7 @@ describe('MembersController (e2e)', () => {
 
     await request(app.getHttpServer())
       .get(`/api/members/${testMember.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect(200)
       .expect((res) => {
         expect(res.body).toEqual(testMember);
@@ -109,6 +172,7 @@ describe('MembersController (e2e)', () => {
     await request(app.getHttpServer())
       .post('/api/members/invite')
       .send(dto)
+      .set('Authorization', `Bearer ${accessToken}`)
       .expect((res) => {
         if (res.status !== 201) {
           // todo remove when logging functionality is added to the app
@@ -180,6 +244,7 @@ describe('MembersController (e2e)', () => {
       name: 'invited member',
       email: 'invited@example.com',
       token: 'testtoken123',
+      password: 'Password1!',
     };
 
     // Clean up any existing invite and member first
@@ -227,6 +292,7 @@ describe('MembersController (e2e)', () => {
     const dto: UpdateMemberNameDto = { name: 'changed' };
     await request(app.getHttpServer())
       .put(`/api/members/${testMember.id}/name`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send(dto)
       .expect(200);
 
@@ -244,7 +310,10 @@ describe('MembersController (e2e)', () => {
   it('/api/members/:id (DELETE)', async () => {
     await addTestMember();
 
-    await request(app.getHttpServer()).delete(`/api/members/${testMember.id}`).expect(200);
+    await request(app.getHttpServer())
+      .delete(`/api/members/${testMember.id}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
 
     const result = await membersRepository.findOneBy({ id: testMember.id });
     expect(result).toBeNull();

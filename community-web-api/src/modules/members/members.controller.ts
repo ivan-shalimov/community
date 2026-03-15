@@ -12,6 +12,7 @@ import {
 
 import { MembersService } from './services/members.service';
 
+import { PublicApi } from '../auth/decorators/public-api.decorator';
 import { CreateMemberInviteDto } from './dto/create-member-invite.dto';
 import { ListOptionsDto } from './dto/list-options.dto';
 import { MemberResponseDto } from './dto/member-response.dto';
@@ -36,6 +37,7 @@ export class MembersController {
   }
 
   @Get('invite/verify')
+  @PublicApi()
   async verify(
     @Query() validateMemberInviteDto: ValidateMemberInviteDto,
   ): Promise<ResultResponseDto> {
@@ -48,6 +50,7 @@ export class MembersController {
   }
 
   @Post('register')
+  @PublicApi()
   async register(@Body() registerMemberDto: RegisterMemberDto): Promise<MemberResponseDto> {
     if (await this.membersService.isEmailUsedByMember(registerMemberDto.email)) {
       throw new BadRequestException(

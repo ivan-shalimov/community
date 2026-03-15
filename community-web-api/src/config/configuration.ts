@@ -9,6 +9,10 @@ export const configuration = (): AppConfig => {
   }
 
   return {
+    secure: {
+      jwtSecret: result.data.JWT_SECRET,
+      jwtRefreshSecret: result.data.JWT_REFRESH_SECRET,
+    },
     common: {
       adminName: result.data.ADMIN_NAME,
       adminEmail: result.data.ADMIN_EMAIL,
