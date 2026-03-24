@@ -1,17 +1,28 @@
+import sdk from './tracing';
+
+// Must be the first import
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app.module';
 import { ICommonConfig } from './config/interfaces';
+import { OtelLogger } from './otel-logger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // Start the OpenTelemetry SDK
+  sdk.start();
+
+  const logger = new OtelLogger('Bootstrap');
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
 
   const configService = await app.resolve<ConfigService>(ConfigService);
   const config = configService.getOrThrow<ICommonConfig>('common');
 
+  app.useLogger(app.get(OtelLogger)); // Use the OTEL logger
   await app.listen(config.port);
-  console.log(`Application is running on: http://localhost:${config.port}`);
+  logger.log(`Application is running on: http://localhost:${config.port}`);
 }
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 bootstrap();

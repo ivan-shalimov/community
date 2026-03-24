@@ -9,7 +9,7 @@ POST {{authBaseUrl}}/login
 Content-Type: application/json
 
 {
-  "username": "{{username}}",
+    "username": "{{username}}",
 	"password": "{{password}}"
 }
 
@@ -31,7 +31,7 @@ POST {{baseUrl}}/register
 Content-Type: application/json
 
 {
-  "token": "Wz1NTaCn0XBULO4RojmY8wAL-Ijc7qiGvzw3y6pUNWNypI8j-iGj3PMtzeHsM7eAKxlSu_A6QD4UT0wCHm08Nw",
+  "token": "v1HqiLr1ZUEQcSH_q901M5OMh_jPVhrXnlMh2btVbsXUOSZsODBBsqQCToZfFmt0CKETn37fUsis30-LjN2Tkg",
   "name": "admin",
   "email": "admin@community.local",
   "password": "Password1!"
@@ -40,14 +40,17 @@ Content-Type: application/json
 ### Get All Members
 GET {{baseUrl}}
 Accept: application/json
+Authorization: Bearer {{login.response.body.accessToken}}
 
 ### Get Member by ID
 GET {{baseUrl}}/123e4567-e89b-12d3-a456-426614174000
 Accept: application/json
+Authorization: Bearer {{login.response.body.accessToken}}
 
 ### Update Member Name
 PUT {{baseUrl}}/123e4567-e89b-12d3-a456-426614174000/name
 Content-Type: application/json
+Authorization: Bearer {{login.response.body.accessToken}}
 
 {
   "name": "John Smith"

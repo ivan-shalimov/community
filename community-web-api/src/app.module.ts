@@ -11,6 +11,7 @@ import { configuration } from './config/configuration';
 import { typeOrmOptionsFactory } from './config/type-orm-options.factory';
 import { AuthModule } from './modules/auth/auth.module';
 import { MembersModule } from './modules/members/members.module';
+import { OtelLogger } from './otel-logger';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { MembersModule } from './modules/members/members.module';
   ],
   controllers: [],
   providers: [
+    OtelLogger,
     {
       provide: APP_PIPE,
       useClass: ZodValidationPipe,
