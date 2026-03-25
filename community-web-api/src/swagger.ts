@@ -12,7 +12,7 @@ export const configureOpenApi = (app: INestApplication): void => {
         type: 'oauth2',
         flows: {
           password: {
-            tokenUrl: 'api/auth/login', // Your actual login endpoint
+            tokenUrl: '/api/auth/login', // Your actual login endpoint
             scopes: {},
           },
         },
