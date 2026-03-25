@@ -75,15 +75,15 @@ export class AuthService {
     await this.sessionRepository.remove(user.sessionId);
   }
 
-  async validateUser(email: string, password: string): Promise<UserData | null> {
-    const member = await this.membersService.findByEmail(email);
+  async validateUser(username: string, password: string): Promise<UserData | null> {
+    const member = await this.membersService.findByEmail(username);
     if (member == null) {
-      console.log(`No member found with email: ${email}`);
+      console.log(`No member found with username: ${username}`);
       return null;
     }
 
     if (!(await CryptoHelper.verifyPassword(member.password, password))) {
-      console.log(`Invalid password for email: ${email}`);
+      console.log(`Invalid password for username: ${username}`);
       return null;
     }
 

@@ -49,11 +49,11 @@ describe('AuthController (e2e)', () => {
   async function login() {
     const result = await request(app.getHttpServer())
       .post('/api/auth/login')
-      .send({ email: testMember.email, password: testMember.password })
+      .send({ username: testMember.email, password: testMember.password })
       .expect(200);
 
-    accessToken = (result.body as LoginResponseDto).accessToken;
-    refreshToken = (result.body as LoginResponseDto).refreshToken;
+    accessToken = (result.body as LoginResponseDto).access_token;
+    refreshToken = (result.body as LoginResponseDto).refresh_token;
   }
 
   beforeAll(async () => {
@@ -91,19 +91,19 @@ describe('AuthController (e2e)', () => {
   it('/api/auth/login (POST) - should return access and refresh tokens', async () => {
     await request(app.getHttpServer())
       .post('/api/auth/login')
-      .send({ email: testMember.email, password: testMember.password })
+      .send({ username: testMember.email, password: testMember.password })
       .expect(200)
       .expect((response) => {
         const body = response.body as LoginResponseDto;
-        expect(body.accessToken).toEqual(expect.any(String));
-        expect(body.refreshToken).toEqual(expect.any(String));
+        expect(body.access_token).toEqual(expect.any(String));
+        expect(body.refresh_token).toEqual(expect.any(String));
       });
   });
 
   it('/api/auth/login (POST) - should reject invalid credentials', async () => {
     await request(app.getHttpServer())
       .post('/api/auth/login')
-      .send({ email: testMember.email, password: 'WrongPassword1!' })
+      .send({ username: testMember.email, password: 'WrongPassword1!' })
       .expect(401);
   });
 
@@ -135,12 +135,12 @@ describe('AuthController (e2e)', () => {
       .expect((response) => {
         const body = response.body as LoginResponseDto;
 
-        expect(response.body).toHaveProperty('accessToken');
-        expect(response.body).toHaveProperty('refreshToken');
-        expect(body.refreshToken).not.toBe(oldRefreshToken);
+        expect(response.body).toHaveProperty('access_token');
+        expect(response.body).toHaveProperty('refresh_token');
+        expect(body.refresh_token).not.toBe(oldRefreshToken);
 
-        accessToken = body.accessToken;
-        refreshToken = body.refreshToken;
+        accessToken = body.access_token;
+        refreshToken = body.refresh_token;
       });
 
     await request(app.getHttpServer())

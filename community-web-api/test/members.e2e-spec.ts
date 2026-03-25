@@ -78,14 +78,14 @@ describe('MembersController (e2e)', () => {
 
     const result = await agent
       .post('/api/auth/login')
-      .send({ email: portalAdmin.email, password: 'AdminPassword1!' });
+      .send({ username: portalAdmin.email, password: 'AdminPassword1!' });
 
     if (result.status !== 200) {
       console.error('Login failed with status:', result.status);
       console.error('Response body:', result.body);
     }
 
-    accessToken = (result.body as LoginResponseDto).accessToken;
+    accessToken = (result.body as LoginResponseDto).access_token;
   }
 
   let app: INestApplication<App>;

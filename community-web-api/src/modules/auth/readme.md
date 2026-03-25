@@ -15,7 +15,7 @@ This module manages authentication for members, including login, access-token pr
 
 ### Business Rules
 1. **Global JWT Protection:** The module registers JWT auth as an application-level guard. Endpoints must explicitly opt out when using local or refresh strategies.
-2. **Credential-Based Login:** Login succeeds only if email exists and password matches the stored member hash.
+2. **Credential-Based Login:** Login succeeds only if username exists and password matches the stored member hash.
 3. **Session-Backed Refresh:** Each login creates a DB session and issues a refresh token whose `sub` is the session ID.
 4. **Refresh Token Rotation:** Refresh deletes the current session and creates a new one, invalidating the old refresh token.
 5. **Session Expiration Enforcement:** Refresh requests are rejected when the session is missing or expired.
@@ -40,12 +40,20 @@ This module manages authentication for members, including login, access-token pr
 ### Validation Rules
 
 **LoginDto:**
-- `email`: Required, valid email format
+- `username`: Required, member login identifier (email value)
 - `password`: Required, non-empty string
 
 ### Authentication Notes
 
-- `POST /api/auth/login` uses local strategy (`email` + `password`) and returns `LoginResponseDto`.
+- `POST /api/auth/login` uses local strategy (`username` + `password`) and returns `LoginResponseDto` (OAuth-compliant token response):
+  ```json
+  {
+    "access_token": "<jwt>",
+    "refresh_token": "<jwt>",
+    "token_type": "Bearer",
+    "expires_in": 3600
+  }
+  ```
 - `GET /api/auth/profile` requires a valid access token in `Authorization: Bearer <token>`.
 - `POST /api/auth/refresh` requires a valid refresh token in `Authorization: Bearer <token>`.
 - `POST /api/auth/logout` requires a valid refresh token and revokes the underlying session.
@@ -65,10 +73,10 @@ sequenceDiagram
 	participant MembersService
 	participant SessionsDB
 
-	Client->>Controller: POST /api/auth/login (email, password)
+	Client->>Controller: POST /api/auth/login (username, password)
 	Controller->>LocalStrategy: validate credentials
-	LocalStrategy->>AuthService: validateUser(email, password)
-	AuthService->>MembersService: findByEmail(email)
+	LocalStrategy->>AuthService: validateUser(username, password)
+	AuthService->>MembersService: findByEmail(username)
 
 	alt Invalid credentials
 		LocalStrategy-->>Client: 401 Unauthorized

@@ -1,4 +1,17 @@
 @baseUrl = http://localhost:3000/api/members
+@authBaseUrl = http://localhost:3000/api/auth
+@username = admin@community.local
+@password = Password1!
+
+### Login
+# @name login
+POST {{authBaseUrl}}/login
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+	"password": "{{password}}"
+}
 
 ### Create Member Invite
 POST {{baseUrl}}/invite
