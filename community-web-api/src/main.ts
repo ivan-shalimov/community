@@ -7,6 +7,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ICommonConfig } from './config/interfaces';
 import { OtelLogger } from './otel-logger';
+import { configureOpenApi } from './swagger';
 
 async function bootstrap() {
   // Start the OpenTelemetry SDK
@@ -21,6 +22,8 @@ async function bootstrap() {
   const config = configService.getOrThrow<ICommonConfig>('common');
 
   app.useLogger(app.get(OtelLogger)); // Use the OTEL logger
+  configureOpenApi(app);
+
   await app.listen(config.port);
   logger.log(`Application is running on: http://localhost:${config.port}`);
 }
