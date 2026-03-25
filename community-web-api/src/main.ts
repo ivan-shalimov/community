@@ -22,7 +22,9 @@ async function bootstrap() {
   const config = configService.getOrThrow<ICommonConfig>('common');
 
   app.useLogger(app.get(OtelLogger)); // Use the OTEL logger
-  configureOpenApi(app);
+  if (process.env.NODE_ENV !== 'production') {
+    configureOpenApi(app);
+  }
 
   await app.listen(config.port);
   logger.log(`Application is running on: http://localhost:${config.port}`);
