@@ -1,0 +1,25 @@
+version: '3.7'
+
+networks:
+  develop-network:
+    external:
+      name: develop-network
+services:
+  community-webapi:
+    image: community-webapi:latest
+    container_name: community-webapi
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    networks:
+      - develop-network
+    ports:
+      - "3000:3000"
+    env_file:
+      - ../../.env.secrets
+      - ./.env
+    environment:
+      - ConnectionStrings__Accounts
+      - ServiceBusSettings__ConnectionString
+      - Logger__Host
+
