@@ -2,8 +2,9 @@ import * as common from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
+import { IS_PUBLIC_API_KEY } from '../../../common/decorators/public-api.decorator';
+
 import { Observe } from '../../../metrics/observe.decorator';
-import { IS_PUBLIC_API_KEY } from '../decorators/public-api.decorator';
 import { IS_JWT_REFRESH_AUTH_USED_KEY } from '../decorators/use-jwt-refresh-auth.decorator';
 import { IS_LOCAL_AUTH_USED_KEY } from '../decorators/use-local-auth.decorator';
 

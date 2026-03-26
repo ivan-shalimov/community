@@ -26,6 +26,9 @@ async function bootstrap() {
     configureOpenApi(app);
   }
 
+  // Starts listening for shutdown hooks
+  app.enableShutdownHooks();
+
   await app.listen(config.port);
   logger.log(`Application is running on: http://localhost:${config.port}`);
 }

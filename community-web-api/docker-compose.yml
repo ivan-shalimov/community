@@ -14,12 +14,18 @@ services:
     networks:
       - develop-network
     ports:
-      - "3000:3000"
+      - "3300:3000"
     env_file:
       - ../../.env.secrets
       - ./.env
     environment:
-      - ConnectionStrings__Accounts
-      - ServiceBusSettings__ConnectionString
-      - Logger__Host
+      - NODE_ENV=staging
+    healthcheck:
+      # We check if the /health endpoint returns a 200 OK
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s    # How often to check
+      timeout: 5s      # How long to wait for a response
+      retries: 3       # How many failures before marking as "unhealthy"
+      start_period: 10s # Give the app 10s to boot before starting checks
 
+  

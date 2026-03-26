@@ -10,6 +10,7 @@ import { EmailModule } from './common/modules/emails/email/email.module';
 import { configuration } from './config/configuration';
 import { typeOrmOptionsFactory } from './config/type-orm-options.factory';
 import { AuthModule } from './modules/auth/auth.module';
+import { HealthModule } from './modules/health/health.module';
 import { MembersModule } from './modules/members/members.module';
 import { OtelLogger } from './otel-logger';
 
@@ -31,6 +32,7 @@ import { OtelLogger } from './otel-logger';
     // domain
     MembersModule,
     AuthModule,
+    HealthModule,
   ],
   controllers: [],
   providers: [
