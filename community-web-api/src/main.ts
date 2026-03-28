@@ -1,19 +1,21 @@
 import sdk from './tracing';
 
+import { Logger } from '@nestjs/common';
 // Must be the first import
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 
+import { NativeLogger } from 'nestjs-pino';
+
 import { AppModule } from './app.module';
 import { ICommonConfig } from './config/interfaces';
-import { OtelLogger } from './otel-logger';
 import { configureOpenApi } from './swagger';
 
 async function bootstrap() {
   // Start the OpenTelemetry SDK
   sdk.start();
 
-  const logger = new OtelLogger('Bootstrap');
+  const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
@@ -21,7 +23,7 @@ async function bootstrap() {
   const configService = await app.resolve<ConfigService>(ConfigService);
   const config = configService.getOrThrow<ICommonConfig>('common');
 
-  app.useLogger(app.get(OtelLogger)); // Use the OTEL logger
+  app.useLogger(app.get(NativeLogger));
   if (process.env.NODE_ENV !== 'production') {
     configureOpenApi(app);
   }

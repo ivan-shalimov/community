@@ -12,10 +12,12 @@ import { NodeSDK } from '@opentelemetry/sdk-node';
 const sdk = new NodeSDK({
   serviceName: 'community-service',
   traceExporter: new OTLPTraceExporter(),
-  metricReader: new PeriodicExportingMetricReader({
-    exporter: new OTLPMetricExporter(),
-  }),
-  logRecordProcessor: new BatchLogRecordProcessor(new OTLPLogExporter()),
+  metricReaders: [
+    new PeriodicExportingMetricReader({
+      exporter: new OTLPMetricExporter(),
+    }),
+  ],
+  logRecordProcessors: [new BatchLogRecordProcessor(new OTLPLogExporter())],
   instrumentations: [
     getNodeAutoInstrumentations(), // Handles general HTTP/Express
     new NestInstrumentation(),

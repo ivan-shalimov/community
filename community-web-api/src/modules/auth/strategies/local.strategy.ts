@@ -20,7 +20,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
-    this.logger.log(`Validated user: ${user.name}`);
+    this.logger.debug(`[validate] User valdated successfully`);
     return user;
   }
 }

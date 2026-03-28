@@ -20,6 +20,7 @@ services:
       - ./.env
     environment:
       - NODE_ENV=staging
+      - OTEL_LOG_LEVEL=warn
     healthcheck:
       # We check if the /health endpoint returns a 200 OK
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]

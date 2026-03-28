@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { LoggerModule } from 'nestjs-pino';
 import { ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 
 import { HttpExceptionFilter } from './common/http-exception.filter';
@@ -12,7 +13,6 @@ import { typeOrmOptionsFactory } from './config/type-orm-options.factory';
 import { AuthModule } from './modules/auth/auth.module';
 import { HealthModule } from './modules/health/health.module';
 import { MembersModule } from './modules/members/members.module';
-import { OtelLogger } from './otel-logger';
 
 @Module({
   imports: [
@@ -27,6 +27,14 @@ import { OtelLogger } from './otel-logger';
       useFactory: typeOrmOptionsFactory,
       inject: [ConfigService],
     }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        level: process.env.LOG_LEVEL || (process.env.NODE_ENV !== 'production' ? 'debug' : 'warn'),
+        autoLogging: {
+          ignore: (req) => req.url === '/health',
+        },
+      },
+    }),
     // common
     EmailModule,
     // domain
@@ -36,7 +44,6 @@ import { OtelLogger } from './otel-logger';
   ],
   controllers: [],
   providers: [
-    OtelLogger,
     {
       provide: APP_PIPE,
       useClass: ZodValidationPipe,

@@ -80,12 +80,12 @@ export class AuthService {
   async validateUser(username: string, password: string): Promise<UserData | null> {
     const member = await this.membersService.findByEmail(username);
     if (member == null) {
-      this.logger.warn(`No member found with username: ${username}`);
+      this.logger.warn(`[validateUser] No member found with provided username`);
       return null;
     }
 
     if (!(await CryptoHelper.verifyPassword(member.password, password))) {
-      this.logger.warn(`Invalid password for username: ${username}`);
+      this.logger.warn(`[validateUser] Invalid password for provided username`);
       return null;
     }
 
