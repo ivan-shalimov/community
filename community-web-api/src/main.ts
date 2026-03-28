@@ -1,7 +1,7 @@
+// tracing Must be the first import
 import sdk from './tracing';
 
 import { Logger } from '@nestjs/common';
-// Must be the first import
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 
