@@ -1,6 +1,8 @@
 # Stage 1: Build
 FROM node:22-alpine AS runner-base
 
+WORKDIR /app
+
 COPY package*.json ./
 
 # Install only required dependencies for production (excluding devDependencies)
