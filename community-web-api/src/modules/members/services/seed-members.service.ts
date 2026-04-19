@@ -14,7 +14,7 @@ export class SeedMemberService implements OnApplicationBootstrap {
   async onApplicationBootstrap() {
     const config = this.configService.getOrThrow<ICommonConfig>('common');
 
-    const existingAdmin = await this.membersService.hasMemberWith(config.adminEmail);
+    const existingAdmin = await this.membersService.isEmailUsedByMember(config.adminEmail);
     if (existingAdmin) {
       return;
     }

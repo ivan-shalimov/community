@@ -14,5 +14,6 @@ import { MemberRepository } from './repositories/member.repository';
   imports: [TypeOrmModule.forFeature([Member, MemberInvite])],
   controllers: [MembersController],
   providers: [MembersService, SeedMemberService, MemberRepository, MemberInviteRepository],
+  exports: [MembersService],
 })
 export class MembersModule {}

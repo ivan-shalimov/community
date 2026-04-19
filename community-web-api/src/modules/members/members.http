@@ -1,4 +1,17 @@
 @baseUrl = http://localhost:3000/api/members
+@authBaseUrl = http://localhost:3000/api/auth
+@username = admin@community.local
+@password = Password1!
+
+### Login
+# @name login
+POST {{authBaseUrl}}/login
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+	"password": "{{password}}"
+}
 
 ### Create Member Invite
 POST {{baseUrl}}/invite
@@ -18,9 +31,10 @@ POST {{baseUrl}}/register
 Content-Type: application/json
 
 {
-  "token": "some-unique-token",
-  "name": "John Doe",
-  "email": "john.doe@example.com"
+  "token": "Wz1NTaCn0XBULO4RojmY8wAL-Ijc7qiGvzw3y6pUNWNypI8j-iGj3PMtzeHsM7eAKxlSu_A6QD4UT0wCHm08Nw",
+  "name": "admin",
+  "email": "admin@community.local",
+  "password": "Password1!"
 }
 
 ### Get All Members

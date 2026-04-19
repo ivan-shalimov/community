@@ -12,6 +12,11 @@ export interface IMailerConfig {
   port: number;
 }
 
+export interface ISecureConfig {
+  jwtSecret: string;
+  jwtRefreshSecret: string;
+}
+
 export interface ICommonConfig {
   port: number;
   adminName: string;
@@ -23,4 +28,5 @@ export interface AppConfig {
   common: ICommonConfig;
   database: IDatabaseConfig;
   mailer: IMailerConfig;
+  secure: ISecureConfig;
 }

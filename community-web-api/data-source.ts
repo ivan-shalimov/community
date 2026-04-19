@@ -1,4 +1,9 @@
+import * as dotenv from 'dotenv';
+import * as path from 'path';
 import { DataSource } from 'typeorm';
+
+// Manually load the env file: __dirname is /workspaces/Community/community-web-api/dist
+dotenv.config({ path: path.join(__dirname, `../.env`) });
 
 const POSTGRES_HOST = process.env.POSTGRES_HOST;
 const POSTGRES_PORT_ENV = process.env.POSTGRES_PORT;
@@ -17,9 +22,7 @@ if (!POSTGRES_PORT_ENV) {
 const POSTGRES_PORT = Number(POSTGRES_PORT_ENV);
 
 if (!Number.isInteger(POSTGRES_PORT) || POSTGRES_PORT <= 0) {
-  throw new Error(
-    'Environment variable POSTGRES_PORT must be a positive integer',
-  );
+  throw new Error('Environment variable POSTGRES_PORT must be a positive integer');
 }
 
 if (!POSTGRES_USER) {
