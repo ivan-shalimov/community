@@ -12,7 +12,7 @@ import {
 
 import { MembersService } from './services/members.service';
 
-import { PublicApi } from '../auth/decorators/public-api.decorator';
+import { PublicApi } from '../../common/decorators/public-api.decorator';
 import { CreateMemberInviteDto } from './dto/create-member-invite.dto';
 import { ListOptionsDto } from './dto/list-options.dto';
 import { MemberResponseDto } from './dto/member-response.dto';

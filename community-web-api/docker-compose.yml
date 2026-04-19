@@ -1,0 +1,33 @@
+version: '3.7'
+
+networks:
+  develop-network:
+    external:
+      name: develop-network
+services:
+  community-webapi:
+    image: community-webapi:latest
+    container_name: community-webapi
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    networks:
+      - develop-network
+    ports:
+      - "3300:3000"
+    env_file:
+      - ../../.env.secrets
+      - ./.env
+    environment:
+      - NODE_ENV=staging
+      - LOG_LEVEL=warn
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://192.168.0.100:4318
+    healthcheck:
+      # We check if the /health endpoint returns a 200 OK
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s    # How often to check
+      timeout: 5s      # How long to wait for a response
+      retries: 3       # How many failures before marking as "unhealthy"
+      start_period: 10s # Give the app 10s to boot before starting checks
+
+  

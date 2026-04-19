@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 
@@ -13,6 +13,8 @@ import { SessionRepository } from './repositories/session.repository';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   private readonly refreshJwtSignOptions: JwtSignOptions = {
     expiresIn: '7d',
   };
@@ -78,12 +80,12 @@ export class AuthService {
   async validateUser(username: string, password: string): Promise<UserData | null> {
     const member = await this.membersService.findByEmail(username);
     if (member == null) {
-      console.log(`No member found with username: ${username}`);
+      this.logger.warn(`[validateUser] No member found with provided username`);
       return null;
     }
 
     if (!(await CryptoHelper.verifyPassword(member.password, password))) {
-      console.log(`Invalid password for username: ${username}`);
+      this.logger.warn(`[validateUser] Invalid password for provided username`);
       return null;
     }
 
